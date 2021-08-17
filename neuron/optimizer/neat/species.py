@@ -35,7 +35,7 @@ class Species:
                     self.members[j], self.members[j+1] = self.members[j+1], self.members[j]
 
     def reproduce(self)->'Genome':
-        if len(self.members) == 1:
+        if len(self.members) <= 1:
             return self.represntative.genome.get_mutated_child()
 
         g1 = Randomizer.choice(self.members).genome
@@ -46,7 +46,7 @@ class Species:
 
         return g1.crossover(g2).mutate()
 
-    def elimnate(self):
+    def eliminate(self):
         self.members = self.members[0:int(Species.ELIMNATIONRATE*len(self.members))]
 
     def __str__(self) -> str:

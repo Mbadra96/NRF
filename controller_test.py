@@ -16,12 +16,13 @@ print(f"Simulation of Neuron Controller for TIME = {TIME} sec and TIMESTEP = {TI
 
 
 if __name__ == "__main__":
-    n = NeuroController([[0,2],[0,0]],TIMESTEP)
+    n = NeuroController([[0,2],[0,0]],[0],[1],TIMESTEP)
 
     for i in range(SAMPLES):
-        output = n.step([1,0],t[i],TIMESTEP)
+        output = n.step([1],t[i],TIMESTEP)
+        print(output)
         v1[i] = output[0][0]
-        v2[i] = output[1][0]
+        v2[i] = output[0][1]
 
     plt.subplot(211)
     plt.plot(t,v1)

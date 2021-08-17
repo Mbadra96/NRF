@@ -1,3 +1,4 @@
+from neuron.optimizer.neat.node_gene import NodeType
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
@@ -194,8 +195,8 @@ class Genome:
         cg1 = next(cit1)
         cg2 = next(cit2)
 
-        weight_sum_1 = cg1.weight if cg1.enables else 0.0
-        weight_sum_2 = cg2.weight if cg2.enables else 0.0
+        weight_sum_1 = cg1.weight if cg1.enabled else 0.0
+        weight_sum_2 = cg2.weight if cg2.enabled else 0.0
         no_of_genes += 1
         # Connection disjoint genes
         while (cit1.__length_hint__() > 0) and (cit2.__length_hint__() > 0):
@@ -203,16 +204,16 @@ class Genome:
             if cg1 == cg2:
                 cg1 = next(cit1)
                 cg2 = next(cit2)
-                weight_sum_1 += cg1.weight if cg1.enables else 0.0
-                weight_sum_2 += cg2.weight if cg2.enables else 0.0
+                weight_sum_1 += cg1.weight if cg1.enabled else 0.0
+                weight_sum_2 += cg2.weight if cg2.enabled else 0.0
                 continue
 
             elif cg1.innovation_number > cg2.innovation_number:
                 cg2 = next(cit2)
-                weight_sum_2 += cg2.weight if cg2.enables else 0.0
+                weight_sum_2 += cg2.weight if cg2.enabled else 0.0
             else:
                 cg1 = next(cit1)
-                weight_sum_1 += cg1.weight if cg1.enables else 0.0
+                weight_sum_1 += cg1.weight if cg1.enabled else 0.0
 
             no_of_disjoint_genes += 1
         # Node excess genes
@@ -222,10 +223,10 @@ class Genome:
 
             if cit1.__length_hint__() > 0:
                 cg1 = next(cit1)
-                weight_sum_1 += cg1.weight if cg1.enables else 0.0
+                weight_sum_1 += cg1.weight if cg1.enabled else 0.0
             else:
                 cg2 = next(cit2)
-                weight_sum_2 += cg2.weight if cg2.enables else 0.0
+                weight_sum_2 += cg2.weight if cg2.enabled else 0.0
 
         abs_sum_of_weights = abs(weight_sum_1 - weight_sum_2)
 
@@ -240,6 +241,14 @@ class Genome:
 
     def build_phenotype(self,time_step)->'NeuroController':
         n = self.history_marking.node_genes_counter
+        inputs = []
+        outputs = []
+        for i,gene in enumerate(self.history_marking.node_genes):
+            if gene.type == NodeType.INPUT:
+                inputs.append(i)
+            elif gene.type == NodeType.OUTPUT:
+                outputs.append(i)
+
         connection_matrix = [[]]
         for i in range(n):
             for j in range(n):
@@ -252,7 +261,7 @@ class Genome:
             if connection_gene.enabled:
                 connection_matrix[connection_gene.f][connection_gene.t] = connection_gene.weight
 
-        return NeuroController(connection_matrix,time_step)
+        return NeuroController(connection_matrix,inputs,outputs,time_step)
 
     def save(self):
         pass
