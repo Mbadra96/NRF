@@ -1,5 +1,4 @@
 # from pyvis.network import Network
-from typing import Tuple
 from neuron.utils.units import ms
 import os
 import json

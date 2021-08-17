@@ -52,7 +52,7 @@ class Population:
             species.sort()
             species.eliminate()
 
-    def update(self,generation_number:'int'):
+    def update(self,generation_number:'int',is_last:bool):
         # Evaluate all members in population
         
         for member in self.population:
@@ -60,8 +60,9 @@ class Population:
         
         self.sort()
         self.print_fitness(generation_number)
-        self.update_species()
-        self.evolve()
+        if not is_last:
+            self.update_species()
+            self.evolve()
 
     def stop(self):
         for member in self.population:

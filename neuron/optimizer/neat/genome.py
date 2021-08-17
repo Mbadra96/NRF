@@ -4,6 +4,7 @@ from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
 from neuron.core.controller import NeuroController
 from multipledispatch import dispatch
+import pickle
 
 class Genome:
     C1 = 1.0
@@ -263,9 +264,14 @@ class Genome:
 
         return NeuroController(connection_matrix,inputs,outputs,time_step)
 
-    def save(self):
-        pass
+    def save(self,name:str="untitled"):
+        f = open(f'{name}.genome', 'wb')
+        pickle.dump(self, f)
+        f.close()
 
     @staticmethod
-    def load():
-        pass
+    def load(name:str="untitled"):
+        f = open(f'{name}.genome', 'rb')
+        g = pickle.load(f)
+        f.close()
+        return g
