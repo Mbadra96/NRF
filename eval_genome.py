@@ -21,15 +21,17 @@ def clamp(x):
     else:
         return x , 0
 
+def sigmoid(x):
+    return 1/(1 + np.exp(-x))
 def eval_func(genome,show:bool=False)->float: 
     cont = genome.build_phenotype(TIMESTEP)
     if show:
         v1 = [0]*SAMPLES
         v2 = [0]*SAMPLES
         v3 = [0]*SAMPLES
-    K = 10
+    K = 40
     ball = LevitatingBall(1,0,0)
-    x_ref = 8
+    x_ref = 2
     x_dot_ref = 0
     total_error = 0
     F = 0
@@ -37,12 +39,14 @@ def eval_func(genome,show:bool=False)->float:
         x, x_dot = ball.step(F,t[i],TIMESTEP)
         e = (x_ref - x) + (x_dot_ref - x_dot)
         total_error += abs(e) 
-        if show:
-            v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
-            v3[i] = F
+        
 
-        output = cont.step([*clamp(e),genome.bias],t[i],TIMESTEP)
-        F = K*(output[0][0] - output[1][0]) + 9.81
+        output = cont.step([sigmoid(e)],t[i],TIMESTEP)
+        if show:
+            v1[i],v2[i]= x, x_dot
+            v3[i] = F
+        # F = K*(output[0][0] - output[1][0])
+        F = K*sigmoid(output[0][0]) - K*sigmoid(output[1][0])
     
     if show:
         fig = make_subplots(rows=3, cols=1, subplot_titles=("x", "x_dot", "Force"))
@@ -69,4 +73,5 @@ def eval_func(genome,show:bool=False)->float:
 if __name__ == "__main__":
     genome = Genome.load("best")
     # print(genome)
+    # genome.visualize()
     print(eval_func(genome,show=True))

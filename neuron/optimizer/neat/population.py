@@ -52,13 +52,14 @@ class Population:
             species.sort()
             species.eliminate()
 
-    def update(self,generation_number:'int',is_last:bool):
+    def update(self,generation_number:'int',is_last:bool,save_best:bool=False):
         # Evaluate all members in population
         
         for member in self.population:
             member.fitness = self.evaluation_function(member.genome)
         
         self.sort()
+        self.get(0).genome.save("best")
         self.print_fitness(generation_number)
         if not is_last:
             self.update_species()

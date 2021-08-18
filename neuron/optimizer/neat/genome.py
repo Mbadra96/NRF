@@ -5,15 +5,16 @@ from neuron.optimizer.neat.history_marking import HistoryMarking
 from neuron.core.controller import NeuroController
 from multipledispatch import dispatch
 import pickle
+from pyvis.network import Network
 
 class Genome:
     C1 = 1.0
     C2 = 1.0
     C3 = 0.4
-    NODEMUTATIONPROBABILITY = 20
-    CONNECTIONMUTATIONPROBABILITY = 20 + NODEMUTATIONPROBABILITY
-    WEIGHTMUTATIONPROBABILITY = 30 + CONNECTIONMUTATIONPROBABILITY
-    BIASMUTATIONPROBABILITY = 30 + WEIGHTMUTATIONPROBABILITY
+    NODEMUTATIONPROBABILITY = 30
+    CONNECTIONMUTATIONPROBABILITY = 10 + NODEMUTATIONPROBABILITY
+    WEIGHTMUTATIONPROBABILITY = 50 + CONNECTIONMUTATIONPROBABILITY
+    BIASMUTATIONPROBABILITY = 10 + WEIGHTMUTATIONPROBABILITY
 
     @dispatch()
     def __init__(self) -> None:
@@ -272,6 +273,25 @@ class Genome:
                 connection_matrix[connection_gene.f][connection_gene.t] = connection_gene.weight
 
         return NeuroController(connection_matrix,inputs,outputs,time_step)
+
+    def visualize(self, name:str='genome'):
+        self.net = Network(directed=True)
+
+        for node in self.node_genes:
+            if node.type == NodeType.INPUT:
+                self.net.add_node(node.innovation_number,label=f"N{node.innovation_number}",color="blue")
+
+            elif node.type == NodeType.OUTPUT:
+                self.net.add_node(node.innovation_number,label=f"N{node.innovation_number}",color="red")
+            else:
+                self.net.add_node(node.innovation_number,label=f"N{node.innovation_number}",color="green")
+        
+        for conn in self.connection_genes:
+            if conn.enabled:
+                self.net.add_edge(conn.f,conn.t,title=f"C{conn.innovation_number} : {conn.weight}")
+
+        self.net.show(name+".html")
+
 
     def save(self,name:str="untitled"):
         f = open(f'{name}.genome', 'wb')
