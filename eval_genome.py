@@ -5,7 +5,7 @@ from neuron.optimizer.neat.genome import Genome
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-TIME = 10 * sec
+TIME = 5 * sec
 TIMESTEP = 0.5 * ms # dt is 0.1 ms
 SAMPLES = int(TIME/TIMESTEP)
 t = np.arange(0,TIME,TIMESTEP)
@@ -27,7 +27,7 @@ def eval_func(genome,show:bool=False)->float:
         v1 = [0]*SAMPLES
         v2 = [0]*SAMPLES
         v3 = [0]*SAMPLES
-    K = 20
+    K = 10
     ball = LevitatingBall(1,0,0)
     x_ref = 8
     x_dot_ref = 0
@@ -41,8 +41,8 @@ def eval_func(genome,show:bool=False)->float:
             v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
             v3[i] = F
 
-        output = cont.step(clamp(e),t[i],TIMESTEP)
-        F = K*(output[0][0] - output[1][0])
+        output = cont.step([*clamp(e),genome.bias],t[i],TIMESTEP)
+        F = K*(output[0][0] - output[1][0]) + 9.81
     
     if show:
         fig = make_subplots(rows=3, cols=1, subplot_titles=("x", "x_dot", "Force"))

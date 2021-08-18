@@ -26,7 +26,7 @@ class Population:
                     self.population[j], self.population[j+1] = self.population[j+1], self.population[j]
 
     def print_fitness(self,generation_number):
-        print(f"-----Generation {generation_number} -------------")
+        print(f"----- Generation {generation_number} -----")
         print(f"Generation {generation_number} Best = {self.population[0].fitness}")
         print(f"Generation {generation_number} Worst = {self.population[-1].fitness}")
 
@@ -63,9 +63,3 @@ class Population:
         if not is_last:
             self.update_species()
             self.evolve()
-
-    def stop(self):
-        for member in self.population:
-            member.fitness = self.evaluation_function(member.genome)
-        
-

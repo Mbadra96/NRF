@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import numpy as np
 from math import sin,pi
 
-TIME = 10 * sec
+TIME = 5 * sec
 TIMESTEP = 0.5 * ms # dt is 0.1 ms
 SAMPLES = int(TIME/TIMESTEP)
 

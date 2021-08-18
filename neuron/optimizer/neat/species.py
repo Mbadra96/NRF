@@ -33,7 +33,10 @@ class Species:
             for j in range(0,n-i-1):
                 if self.members[j].fitness > self.members[j+1].fitness:
                     self.members[j], self.members[j+1] = self.members[j+1], self.members[j]
+        # make the best performing member as represntative 
+        # self.represntative = self.members[0]
 
+        
     def reproduce(self)->'Genome':
         if len(self.members) <= 1:
             return self.represntative.genome.get_mutated_child()
