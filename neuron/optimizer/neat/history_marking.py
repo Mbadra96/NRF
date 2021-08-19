@@ -26,7 +26,9 @@ class HistoryMarking:
     def create_new_connection(self,input_innovation_number,output_innovation_number):
         self.connection_genes_counter += 1
         connection =  self.connection_genes.put(ConnectionGene(self.connection_genes_counter-1,input_innovation_number,output_innovation_number,1.0,True))
-        return connection.clone()
+        new_conn =  connection.clone()
+        new_conn.weight = Randomizer.Float(-1.0,1.0)
+        return new_conn
 
     def add_input(self) -> 'NodeGene':
         return self.create_new_node(NodeType.INPUT)

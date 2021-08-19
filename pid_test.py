@@ -20,7 +20,7 @@ F = 0
 kp = 20
 ki = 10
 kd = 0.1
-x_ref = 5
+x_ref = 2
 x_dot_ref = 0
 e_I = 0
 e_last = 0
@@ -28,18 +28,19 @@ e_dot = 0
 total_error = 0
 if __name__ == "__main__":
     ball = LevitatingBall(1,0,0)
-
+    total_F = 0
     for i in range(SAMPLES):    
         v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
         e = (x_ref - v1[i]) + (x_dot_ref - v2[i])
         e_I += e
-        total_error += abs(e)
+        total_error += abs((x_ref - v1[i])/10.0) 
         v3[i] = e
         e_dot = (e - e_last)/TIMESTEP
         F = (kp * e )+ (ki * e_I) + (kd * e_dot)
+        total_F += abs(F/20)
         e_last = e
         
-    print(total_error)
+    print(total_error+0.01*total_F)
     
     fig = make_subplots(rows=3, cols=1)
 

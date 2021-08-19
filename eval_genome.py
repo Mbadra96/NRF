@@ -23,30 +23,46 @@ def clamp(x):
 
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
+
+
 def eval_func(genome,show:bool=False)->float: 
     cont = genome.build_phenotype(TIMESTEP)
+
     if show:
         v1 = [0]*SAMPLES
         v2 = [0]*SAMPLES
         v3 = [0]*SAMPLES
-    K = 40
+    K = 20.0
+
+
     ball = LevitatingBall(1,0,0)
-    x_ref = 2
+    x_ref = 5
     x_dot_ref = 0
     total_error = 0
+    total_F = 0
     F = 0
-    for i in range(SAMPLES):
-        x, x_dot = ball.step(F,t[i],TIMESTEP)
-        e = (x_ref - x) + (x_dot_ref - x_dot)
-        total_error += abs(e) 
-        
+    x = 0
+    x_dot = 0
 
-        output = cont.step([sigmoid(e)],t[i],TIMESTEP)
+    # Simulation Loop
+    for i in range(SAMPLES):
+        e = (x_ref - x) + (x_dot_ref - x_dot)
+        total_error += abs((x_ref - x)/10.0) 
+        ###########################
+        sensors = [*clamp(e)]
+        ######################
+        output = cont.step(sensors,t[i],TIMESTEP) # Controller 
+        x, x_dot = ball.step(F,t[i],TIMESTEP) # Model
+        
+        
         if show:
             v1[i],v2[i]= x, x_dot
             v3[i] = F
-        # F = K*(output[0][0] - output[1][0])
-        F = K*sigmoid(output[0][0]) - K*sigmoid(output[1][0])
+
+        ######################
+        F = K*(output[0][0] - output[1][0])
+        total_F += abs(F/K)
+        ######################
     
     if show:
         fig = make_subplots(rows=3, cols=1, subplot_titles=("x", "x_dot", "Force"))
@@ -65,13 +81,13 @@ def eval_func(genome,show:bool=False)->float:
             go.Scatter(x=t, y=v3),
             row=3, col=1
         )
-        fig.update_layout(height=720, width=1080, title_text="Side By Side Subplots")
+        fig.update_layout(height=720, width=1080, title_text="Genome Test")
         fig.show()
     
-    return total_error
+    return total_error#+0.01*total_F
 
 if __name__ == "__main__":
-    genome = Genome.load("best")
-    # print(genome)
-    # genome.visualize()
+    genome:Genome = Genome.load("best")
+    print(genome)
+    genome.visualize()
     print(eval_func(genome,show=True))

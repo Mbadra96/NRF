@@ -12,8 +12,8 @@ class Genome:
     C2 = 1.0
     C3 = 0.4
     NODEMUTATIONPROBABILITY = 30
-    CONNECTIONMUTATIONPROBABILITY = 30 + NODEMUTATIONPROBABILITY
-    WEIGHTMUTATIONPROBABILITY = 40 + CONNECTIONMUTATIONPROBABILITY
+    CONNECTIONMUTATIONPROBABILITY = 10 + NODEMUTATIONPROBABILITY
+    WEIGHTMUTATIONPROBABILITY = 60 + CONNECTIONMUTATIONPROBABILITY
 
     @dispatch()
     def __init__(self) -> None:
@@ -58,7 +58,7 @@ class Genome:
         if (new_connection_gene_1 == None) or (new_connection_gene_2 == None):
             return
 
-        new_connection_gene_2.weight = selected_connection_gene.weight
+        new_connection_gene_1.weight = selected_connection_gene.weight
         selected_connection_gene.enabled = False
         self.node_genes.put(new_node_gene)
         self.connection_genes.put(new_connection_gene_1)
@@ -259,11 +259,10 @@ class Genome:
             if (i<n-1):
                 connection_matrix.append([])
             
-
+        
         for connection_gene in self.connection_genes:
             if connection_gene.enabled:
                 connection_matrix[connection_gene.f][connection_gene.t] = connection_gene.weight
-
         return NeuroController(connection_matrix,inputs,outputs,time_step)
 
     def visualize(self, name:str='genome'):
