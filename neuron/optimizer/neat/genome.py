@@ -12,15 +12,13 @@ class Genome:
     C2 = 1.0
     C3 = 0.4
     NODEMUTATIONPROBABILITY = 30
-    CONNECTIONMUTATIONPROBABILITY = 10 + NODEMUTATIONPROBABILITY
-    WEIGHTMUTATIONPROBABILITY = 50 + CONNECTIONMUTATIONPROBABILITY
-    BIASMUTATIONPROBABILITY = 10 + WEIGHTMUTATIONPROBABILITY
+    CONNECTIONMUTATIONPROBABILITY = 30 + NODEMUTATIONPROBABILITY
+    WEIGHTMUTATIONPROBABILITY = 40 + CONNECTIONMUTATIONPROBABILITY
 
     @dispatch()
     def __init__(self) -> None:
         self.node_genes = GeneSet()
         self.connection_genes = GeneSet()
-        self.bias = Randomizer.Float(0.0,1.0)
         self.history_marking = None
         
     @dispatch(object)
@@ -28,17 +26,13 @@ class Genome:
         self.node_genes = other.node_genes.clone()
         self.connection_genes = other.connection_genes.clone()
         self.history_marking = other.history_marking
-        self.bias = other.bias
 
     @dispatch(object,object,object)
     def __init__(self,node_genes:'GeneSet',connection_genes:'GeneSet',history_marking:'HistoryMarking') -> None:
         self.node_genes = node_genes
         self.connection_genes = connection_genes
         self.history_marking = history_marking
-        self.bias = Randomizer.Float(0.0,1.0)
         
-    def mutate_bias(self):
-        self.bias = Randomizer.Float(0.0,1.0)
         
     def mutate_node(self):
         
@@ -92,11 +86,9 @@ class Genome:
             self.mutate_node()
         elif random_number < Genome.CONNECTIONMUTATIONPROBABILITY:
             self.mutate_connection()
-        elif random_number< Genome.WEIGHTMUTATIONPROBABILITY:
-            self.mutate_weight()
         else:
-            self.mutate_bias()
-            
+            self.mutate_weight()
+
         return self
 
     def get_mutated_child(self) -> 'Genome':
