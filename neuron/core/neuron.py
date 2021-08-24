@@ -16,24 +16,24 @@ class Neuron:
     R = params['R']
     Tn = params['Tn'] * ms
     RefractoryPeriod = params['RP'] * ms
-    kernel = params['Kernel'] * ms
+    # kernel = params['Kernel'] * ms
     
     def __init__(self,dt) -> None:
         self.v = 0
         self.refractory_state = False
-        self.ts = 0
         self.s = False
         self.Isyn = 0
         self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
 
-        self.kernel = int(Neuron.kernel/dt)
-        self.n_max = Neuron.kernel / Neuron.RefractoryPeriod
-        self.potential_kernel = np.zeros([self.kernel,1],dtype=np.float32)
-        self.rate = 0
-        self.counter = 0
+        # self.kernel = int(Neuron.kernel/dt)
+        # self.n_max = Neuron.kernel / Neuron.RefractoryPeriod
+        # self.potential_kernel = np.zeros([self.kernel,1],dtype=np.float32)
+        # self.rate = 0
+        # self.counter = 0
 
     def charge(self,Isyn):
         self.Isyn += Isyn
+
     def step(self,I,t,dt):
         
         if self.refractory_counter <= 0:
@@ -41,8 +41,8 @@ class Neuron:
 
         # update (v) based on input current and connected synapses
         if not self.refractory_state:
-            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(I+self.Isyn)) # update (v) using Euler Method
-        # print(self.v)
+            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(self.Isyn)) # update (v) using Euler Method
+        
         
         # update spike trains
         if self.v >= 1.0:
@@ -54,19 +54,89 @@ class Neuron:
             self.s = False
 
         ## decoding output
-        self.potential_kernel[self.counter] = self.s
-        self.rate = self.potential_kernel.sum()/self.n_max
+        # self.potential_kernel[self.counter] = self.s
+        # self.rate = self.potential_kernel.sum()/self.n_max
         
-        self.counter += 1
+        # self.counter += 1
         
-        if self.counter >= self.kernel:
-            self.counter = 0
+        # if self.counter >= self.kernel:
+        #     self.counter = 0
             
         self.Isyn = 0
         self.refractory_counter -= 1
 
-        return self.rate, self.s, self.v
+        return self.s, self.v
+
+class OutputNeuron:    
+    def __init__(self,dt) -> None:
+        self.v = 0
+        self.refractory_state = False
+        self.s = False
+        self.Isyn = 0
+        self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
+
+    def charge(self,Isyn):
+        self.Isyn += Isyn
+
+    def step(self,I,t,dt):
+        
+        if self.refractory_counter <= 0:
+            self.refractory_state = False 
+
+        # update (v) based on input current and connected synapses
+        if not self.refractory_state:
+            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(self.Isyn)) # update (v) using Euler Method
+        
+        
+        # update spike trains
+        if self.v >= 1.0:
+            self.s = True
+            self.refractory_state = True
+            self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
+            self.v = 0
+        else:
+            self.s = False
+            
+        self.Isyn = 0
+        self.refractory_counter -= 1
+
+        return self.s, self.v
     
+class InputNeuron:
+    TS = params['Ts']
+    CSYN= params['Csyn']
+    def __init__(self,dt) -> None:
+        self.v = 0
+        self.refractory_state = False
+        self.s = False
+        self.Isyn = 0
+        self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
+
+
+    def step(self,spike:bool,t,dt):
+        self.Isyn += (dt/InputNeuron.TS)*(-self.Isyn) + InputNeuron.CSYN * (1 if spike else 0)
+        if self.Isyn >= 2:
+            self.Isyn = 2
+        if self.refractory_counter <= 0:
+            self.refractory_state = False 
+
+        # update (v) based on input current and connected synapses
+        if not self.refractory_state:
+            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(self.Isyn)) # update (v) using Euler Method
+        
+        
+        # update spike trains
+        if self.v >= 1.0:
+            self.s = True
+            self.refractory_state = True
+            self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
+            self.v = 0
+        else:
+            self.s = False
+
+        self.refractory_counter -= 1
+
+        return self.s, self.v
 
 # class NeuronPool:
 #     def __init__(self,size,synapseMatrix,dt) -> None:

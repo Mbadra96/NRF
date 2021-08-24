@@ -50,7 +50,8 @@ class Species:
         return g1.crossover(g2).mutate()
 
     def eliminate(self):
-        self.members = self.members[0:int(Species.ELIMNATIONRATE*len(self.members))]
+        if int(Species.ELIMNATIONRATE*len(self.members)) > 1:
+            self.members = self.members[0:int(Species.ELIMNATIONRATE*len(self.members))]
 
     def __str__(self) -> str:
         s = ""

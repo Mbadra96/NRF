@@ -1,3 +1,5 @@
+from numpy import Inf
+from numpy.core.arrayprint import set_printoptions
 from neuron.optimizer.neat.species import Member, Species
 from neuron.optimizer.neat.genome import Genome
 
@@ -27,8 +29,18 @@ class Population:
 
     def print_fitness(self,generation_number):
         print(f"----- Generation {generation_number} -----")
-        print(f"Generation {generation_number} Best = {self.population[0].fitness}")
-        print(f"Generation {generation_number} Worst = {self.population[-1].fitness}")
+        best_fitness = Inf
+        worst_fitness = 0
+        for species in self.species:
+            print( len(species.members))
+
+            if best_fitness > species.members[0].fitness:
+                best_fitness = species.members[0].fitness
+            if worst_fitness < species.members[-1].fitness:
+                worst_fitness = species.members[-1].fitness
+
+        print(f"Generation {generation_number} Best = {best_fitness}")
+        print(f"Generation {generation_number} Worst = {worst_fitness}")
 
     def evolve(self):
         self.population.clear()
@@ -60,7 +72,8 @@ class Population:
         
         self.sort()
         self.get(0).genome.save("best")
-        self.print_fitness(generation_number)
+        self.update_species()
+
         if not is_last:
-            self.update_species()
             self.evolve()
+        self.print_fitness(generation_number)

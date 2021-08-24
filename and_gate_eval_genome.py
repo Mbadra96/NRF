@@ -5,24 +5,10 @@ from neuron.optimizer.neat.genome import Genome
 # from plotly.subplots import make_subplots
 # import plotly.graph_objects as go
 
-TIME = 0.2 * sec
+TIME = 0.3 * sec
 TIMESTEP = 0.5 * ms # dt is 0.1 ms
 SAMPLES = int(TIME/TIMESTEP)
 t = np.arange(0,TIME,TIMESTEP)
-
-def clamp(x):
-    if x > 1:
-        return 1, 0
-    elif x < 0 :
-        if x < -1:
-            return 0, 1
-        else:
-            return 0, -x
-    else:
-        return x , 0
-
-def sigmoid(x):
-    return 1/(1 + np.exp(-x))
 
 
 def eval_func(genome,show:bool=False)->float: 
@@ -34,8 +20,8 @@ def eval_func(genome,show:bool=False)->float:
         v3 = [0]*SAMPLES
 
     ref1 = 0
-    ref2 = 0.5
-    ref3 = 0.5
+    ref2 = 0
+    ref3 = 0
     ref4 = 1
 
     total_error = 0
@@ -46,13 +32,13 @@ def eval_func(genome,show:bool=False)->float:
 
     # Simulation Loop
     for i in range(SAMPLES):
-        output1 = cont.step([0.5,0.5],t[i],TIMESTEP) # Controller 
+        output1 = cont.step([0,0],t[i],TIMESTEP) # Controller 
 
     for i in range(SAMPLES):
-        output2 = cont.step([0.5,1],t[i],TIMESTEP) # Controller 
+        output2 = cont.step([0,1],t[i],TIMESTEP) # Controller 
 
     for i in range(SAMPLES):
-        output3 = cont.step([1,0.5],t[i],TIMESTEP) # Controller 
+        output3 = cont.step([1,0],t[i],TIMESTEP) # Controller 
 
     for i in range(SAMPLES):
         output4 = cont.step([1,1],t[i],TIMESTEP) # Controller 
@@ -70,5 +56,5 @@ def eval_func(genome,show:bool=False)->float:
 if __name__ == "__main__":
     genome:Genome = Genome.load("best")
     # print(genome)
-    # genome.visualize()
+    genome.visualize()
     print(eval_func(genome,show=True))

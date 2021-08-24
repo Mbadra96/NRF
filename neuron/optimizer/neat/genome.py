@@ -2,7 +2,7 @@ from neuron.optimizer.neat.node_gene import NodeType
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
-from neuron.core.controller import NeuroController
+from neuron.core.neuro_controller import NeuroController
 from multipledispatch import dispatch
 import pickle
 from pyvis.network import Network
@@ -242,7 +242,7 @@ class Genome:
     def __str__(self) -> str:
                 return "Genome {\n" + str(self.node_genes) + "\n" + str(self.connection_genes) + "\n\t}" 
 
-    def build_phenotype(self,time_step)->'NeuroController':
+    def build_phenotype(self,input_signals,output_signals,input_encoder_threshold,output_decoder_threshold,output_base,time_step)->'NeuroController':
         n = self.history_marking.node_genes_counter
         inputs = []
         outputs = []
@@ -263,7 +263,8 @@ class Genome:
         for connection_gene in self.connection_genes:
             if connection_gene.enabled:
                 connection_matrix[connection_gene.f][connection_gene.t] = connection_gene.weight
-        return NeuroController(connection_matrix,inputs,outputs,time_step)
+                
+        return NeuroController(input_signals,output_signals,input_encoder_threshold,output_decoder_threshold,output_base,connection_matrix,inputs,outputs,time_step)
 
     def visualize(self, name:str='genome'):
         self.net = Network(directed=True)
