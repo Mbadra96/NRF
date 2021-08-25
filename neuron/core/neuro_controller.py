@@ -45,10 +45,10 @@ class NeuroController:
             self.decoders.append(SFDecoder(base=output_base,threshold=output_decoder_threshold))
     
     def step(self,I,t,dt):
-        outputs = []
+        
         # if(len(I) != len(self.encoders)):
         #     raise IndexError(f"input length: {len(I)} not equal encoders length: {len(self.encoders)}")
-
+        outputs = []
         inputs = [0]*len(self.neurons)
         inputs[0],inputs[1] = I[0],I[1]
 
@@ -72,3 +72,4 @@ class NeuroController:
             output_signals.append(decoder.decode(int(outputs[i*2][0]),int(outputs[i*2 + 1][0])))
 
         return output_signals
+        # return int(outputs[0][0]),int(outputs[1][0])

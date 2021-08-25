@@ -22,7 +22,12 @@ class Synapse:
         self.w = w
 
     def step(self,t,dt):
-        self.Isyn += (dt/Synapse.TS)*(-self.Isyn) + Synapse.CSYN * (1 if self.pre_neuron.s else 0)
-        if self.Isyn >= 2:
-            self.Isyn = 2
-        self.post_neuron.charge(self.Isyn*self.w)
+        # self.Isyn += (dt/Synapse.TS)*(-self.Isyn) + Synapse.CSYN * (1 if self.pre_neuron.s else 0)
+        # if self.Isyn >= 2:
+        #     self.Isyn = 2
+        # self.post_neuron.charge(self.Isyn*self.w)
+        if self.pre_neuron.s:
+            self.post_neuron.charge(Synapse.CSYN*self.w)
+
+    def __str__(self) -> str:
+        return f"Synapse from: {self.pre_neuron} to: {self.post_neuron}"

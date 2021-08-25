@@ -25,8 +25,8 @@ def clamp(e):
 def eval_func(genome,show:bool=False)->float: 
     input_signals = 1
     output_signals = 1
-    input_encoder_threshold = 0.01
-    output_decoder_threshold = 0.001
+    input_encoder_threshold = 0.0001
+    output_decoder_threshold = 1
     output_base = 9.81
 
     # cont = genome.build_phenotype(input_signals,output_signals,input_encoder_threshold,output_decoder_threshold,output_base,TIMESTEP)
@@ -55,16 +55,17 @@ def eval_func(genome,show:bool=False)->float:
 
     # Simulation Loop
     for i in range(SAMPLES):
-        e = (x_ref - x) #+ (x_dot_ref - x_dot)
+        e = (x_ref - x) + (x_dot_ref - x_dot)
         e_I += 0.00001*e
         total_error += abs((x_ref - x)/10.0)
         ###########################
         sensors = [*clamp(e)]
         ######################
         output = cont.step(sensors,t[i],TIMESTEP) # Controller 
+        # F = 10*output[0] - 10*output[1] + 9.81 
         F = output[0]
         x, x_dot = ball.step(F,t[i],TIMESTEP) # Model
-        
+        # print(f"in -> {sensors}, out -> {output}")
         
         if show:
             v1[i],v2[i]= x, x_dot
