@@ -46,14 +46,14 @@ class NeuroController:
     
     def step(self,I,t,dt):
         
-        # if(len(I) != len(self.encoders)):
-        #     raise IndexError(f"input length: {len(I)} not equal encoders length: {len(self.encoders)}")
+        if(len(I) != len(self.encoders)):
+            raise IndexError(f"input length: {len(I)} not equal encoders length: {len(self.encoders)}")
         outputs = []
         inputs = [0]*len(self.neurons)
-        inputs[0],inputs[1] = I[0],I[1]
+        # inputs[0],inputs[1] = I[0],I[1]
 
-        # for i, encoder in enumerate(self.encoders):
-        #     inputs[i*2],inputs[i*2 + 1] = encoder.encode(I[i])
+        for i, encoder in enumerate(self.encoders):
+            inputs[i*2],inputs[i*2 + 1] = encoder.encode(I[i])
             
 
 
