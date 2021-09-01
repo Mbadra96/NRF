@@ -1,7 +1,6 @@
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.core import Neat
 from eval_genome import eval_func
-from neuron.utils.helpers import clear
 
 if __name__ == "__main__":
     POPULATION_SIZE = 10
@@ -9,7 +8,6 @@ if __name__ == "__main__":
     Randomizer.seed(0)
     neat = Neat(2, 2)
     population = neat.generate_population(POPULATION_SIZE,eval_func)
-    clear()
     print(f"Starting Neat with poulation of {POPULATION_SIZE} for {GENERATIONS} generations")
 
     for i in range(GENERATIONS):
