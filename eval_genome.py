@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 TIME = 5 * sec
-TIMESTEP = 0.5 * ms  # dt is 0.1 ms
+TIMESTEP = 0.5 * ms  # dt is 0.5 ms
 SAMPLES = int(TIME / TIMESTEP)
 t = np.arange(0, TIME, TIMESTEP)
 

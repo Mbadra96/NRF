@@ -34,7 +34,7 @@ if __name__ == "__main__":
         e = (x_ref - v1[i]) + (x_dot_ref - v2[i])
         e_I += e
         total_error += abs((x_ref - v1[i])/10.0) 
-        v3[i] = e_I
+        v3[i] = F
         e_dot = (e - e_last)/TIMESTEP
         F = (kp * e )+ (ki * e_I) + (kd * e_dot)
         total_F += abs(F/20)
