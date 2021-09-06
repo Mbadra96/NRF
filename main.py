@@ -1,5 +1,5 @@
-from testing.test_case_1 import TestCase1
+from testing.mass_uncertainty_test import MassUncertaintyTest
 
 if __name__ == '__main__':
-    t = TestCase1()
+    t = MassUncertaintyTest()
     t.start()
