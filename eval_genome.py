@@ -1,5 +1,6 @@
 from neuron.core.neuro_controller import NeuroController
 from neuron.simulation.levitating_ball import LevitatingBall
+from neuron.utils.randomizer import Randomizer
 from neuron.utils.units import *
 import numpy as np
 from neuron.optimizer.neat.genome import Genome
@@ -99,7 +100,8 @@ def eval_func(genome, show: bool = False, mass=1.0) -> float:
     return total_error  # +0.01*total_F
 
 
-def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float = 1.0, fig=None):
+def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float = 1.0, disturbance: bool = False,
+                                       disturbance_magnitude=1.0, fig=None):
     input_encoder_threshold = 0.0001
     output_decoder_threshold = 1
     output_base = 9.81
@@ -122,6 +124,8 @@ def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float =
     # Simulation Loop
     for i in range(SAMPLES):
         e = (x_ref - x) + (x_dot_ref - x_dot)
+        if disturbance:
+            e += Randomizer.Float(float(-disturbance_magnitude), float(disturbance_magnitude))
         total_error += abs((x_ref - x) / 10.0)
         ###########################
         sensors = [*clamp(e)]
@@ -142,20 +146,20 @@ def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float =
             fig = make_subplots(rows=3, cols=1, subplot_titles=("X", "X Dot", "Force"))
 
         fig.add_trace(
-            go.Scatter(x=t, y=v1, name=f"X M={mass:.2f}"),
+            go.Scatter(x=t, y=v1, name=f"X D={disturbance_magnitude:.2f}"),
             row=1, col=1
         )
 
         fig.add_trace(
-            go.Scatter(x=t, y=v2, name=f"X Dot M={mass:.2f}"),
+            go.Scatter(x=t, y=v2, name=f"X Dot D={disturbance_magnitude:.2f}"),
             row=2, col=1
         )
 
         fig.add_trace(
-            go.Scatter(x=t, y=v3, name=f"Force M={mass:.2f}"),
+            go.Scatter(x=t, y=v3, name=f"Force D={disturbance_magnitude:.2f}"),
             row=3, col=1
         )
-        fig.update_layout(height=720, width=1080, title_text="Uncertain Mass Scenario")
+        fig.update_layout(height=720, width=1080, title_text="Disturbance Test")
 
     return fig
 
