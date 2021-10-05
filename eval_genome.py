@@ -2,6 +2,7 @@ from neuron.core.neuro_controller import NeuroController
 from neuron.simulation.levitating_ball import LevitatingBall
 from neuron.utils.randomizer import Randomizer
 from neuron.utils.units import *
+from neuron.core.coder import SFDecoder
 import numpy as np
 from neuron.optimizer.neat.genome import Genome
 from plotly.subplots import make_subplots
@@ -28,8 +29,8 @@ def eval_func(genome, show: bool = False, mass=1.0) -> float:
     input_encoder_threshold = 0.0001
     output_decoder_threshold = 1
     output_base = 9.81
-
-    cont = genome.build_phenotype(input_signals,output_signals,input_encoder_threshold,output_decoder_threshold,output_base,TIMESTEP)
+    decoder = SFDecoder(output_base, output_decoder_threshold)
+    cont = genome.build_phenotype(TIMESTEP)
     # connection_matix = [[0.0, 0.0, 1.0, 0.0],
     #                     [0.0, 0.0, 0.0, 1.0],
     #                     [0.0, 0.0, 0.0, 0.0],
@@ -60,9 +61,8 @@ def eval_func(genome, show: bool = False, mass=1.0) -> float:
         ###########################
         sensors = [*clamp(e)]
         ######################
-        output = cont.step(sensors, t[i], TIMESTEP)  # Controller
-        # F = 10*output[0] - 10*output[1] + 9.81
-        F = output[0]
+        F = decoder.decode(*cont.step(sensors, t[i], TIMESTEP))  # Controller
+
         x, x_dot = ball.step(F, t[i], TIMESTEP)  # Model
         # print(f"in -> {sensors}, out -> {output}")
 
@@ -102,12 +102,10 @@ def eval_func(genome, show: bool = False, mass=1.0) -> float:
 
 def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float = 1.0, disturbance: bool = False,
                                        disturbance_magnitude=1.0, fig=None):
-    input_encoder_threshold = 0.0001
     output_decoder_threshold = 1
     output_base = 9.81
-
-    cont = genome.build_phenotype(1, 1, input_encoder_threshold, output_decoder_threshold,
-                                  output_base, TIMESTEP)
+    decoder = SFDecoder(output_base, output_decoder_threshold)
+    cont = genome.build_phenotype(TIMESTEP)
 
     if show:
         v1 = [0] * SAMPLES
@@ -124,20 +122,18 @@ def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float =
     # Simulation Loop
     for i in range(SAMPLES):
         e = (x_ref - x) + (x_dot_ref - x_dot)
-        if disturbance:
-            e += Randomizer.Float(float(-disturbance_magnitude), float(disturbance_magnitude))
         total_error += abs((x_ref - x) / 10.0)
         ###########################
         sensors = [*clamp(e)]
         ######################
-        output = cont.step(sensors, t[i], TIMESTEP)  # Controller
-        f = output[0]
-        x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
-        # print(f"in -> {sensors}, out -> {output}")
+        F = decoder.decode(*cont.step(sensors, t[i], TIMESTEP))  # Controller
+        # F = 10*output[0] - 10*output[1] + 9.81
+
+        x, x_dot = ball.step(F, t[i], TIMESTEP)  # Model
 
         if show:
             v1[i], v2[i] = x, x_dot
-            v3[i] = f
+            v3[i] = F
         else:
             pass
 
