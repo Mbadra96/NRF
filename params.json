@@ -5,5 +5,7 @@
   "Ts": 1,
   "Csyn":2,
   "RP": 2.0,
-  "Kernel":20
+  "Kernel":20,
+  "Evaluation_Time": 5,
+  "Time_Step": 0.5
 }

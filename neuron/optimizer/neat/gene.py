@@ -1,4 +1,6 @@
 from multipledispatch import dispatch
+
+
 class Gene:
     @dispatch(int)
     def __init__(self,innovation_number) -> None:

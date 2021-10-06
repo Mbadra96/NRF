@@ -1,9 +1,9 @@
 from neuron.core.synapse import Synapse
 from neuron.core.neuron import Neuron
-from neuron.core.coder import SFDecoder, SFEncoder
+
 
 class NeuroController:
-    def __init__(self,connection,inputs,outputs,dt) -> None:
+    def __init__(self, connection, inputs, outputs, dt) -> None:
         
         # Create Neurons
         self.neurons = []
@@ -16,7 +16,7 @@ class NeuroController:
         for i in range(len(connection)):
             for j in range(len(connection[i])):
                 if connection[i][j] != 0:
-                    self.synapses.append(Synapse(w=connection[i][j],pre=self.neurons[i],post=self.neurons[j]))
+                    self.synapses.append(Synapse(w=connection[i][j], pre=self.neurons[i], post=self.neurons[j]))
         self.inputs = []
         self.outputs = []
         for i in range(len(connection)):
@@ -30,7 +30,7 @@ class NeuroController:
             else:
                 self.outputs.append(0)
             
-    def step(self,I,t,dt):
+    def step(self, I, t, dt):
         inputs = self.inputs.copy()
         # translate input
         c = 0
@@ -41,12 +41,12 @@ class NeuroController:
             
         outputs = []
         for s in self.synapses:
-            s.step(t,dt)
+            s.step(t, dt)
         
         for i,n in enumerate(self.neurons):
             if self.outputs[i]:
-                outputs.append(n.step(inputs[i],t,dt))
+                outputs.append(n.step(inputs[i], t, dt))
             else:
-                n.step(inputs[i],t,dt)
+                n.step(inputs[i], t, dt)
 
         return outputs

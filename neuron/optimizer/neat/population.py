@@ -10,6 +10,8 @@ class Population:
         self.size = size
         self.evaluation_function = evaluation_function
         self.best_genome = None
+        self.best_fitness = Inf
+        self.worst_fitness = 0
 
     def get(self, index: 'int') -> 'Member':
         return self.population[index]
@@ -30,8 +32,8 @@ class Population:
 
     def print_fitness(self, generation_number):
         print(f"----- Generation {generation_number} -----")
-        best_fitness = Inf
-        worst_fitness = 0
+        self.best_fitness = Inf
+        self.worst_fitness = 0
         print("Species => ", end="[ ")
         for species in self.species:
             print(len(species.members), end=" ")
@@ -48,8 +50,17 @@ class Population:
     def evolve(self):
         self.population.clear()
         species_share = self.size/len(self.species)
-
+        self.best_fitness = Inf
+        self.worst_fitness = 0
+        # update population and get the best and the worst members in species
         for species in self.species:
+
+            if self.best_fitness > species.members[0].fitness:
+                self.best_fitness = species.members[0].fitness
+                self.best_genome = species.members[0]
+            if self.worst_fitness < species.members[-1].fitness:
+                self.worst_fitness = species.members[-1].fitness
+
             for i in range(int(species_share)):
                 self.population.append(Member(species.reproduce(), Inf))
 
@@ -67,7 +78,7 @@ class Population:
             species.sort()
             species.eliminate()
 
-    def update(self, generation_number: 'int', is_last: bool, save_best: bool=False):
+    def update(self, is_last: bool, save_best: bool = False):
         # Evaluate all members in population
         
         for member in self.population:
@@ -78,5 +89,8 @@ class Population:
 
         if not is_last:
             self.evolve()
-        self.print_fitness(generation_number)
-        self.best_genome.genome.save("best")
+
+        # self.print_fitness(generation_number)
+
+        if save_best:
+            self.best_genome.genome.save("best")
