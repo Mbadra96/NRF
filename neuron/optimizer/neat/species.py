@@ -11,7 +11,7 @@ class Species:
     ELIMNATIONRATE = 0.7
 
     def __init__(self,represntative:'Member') -> None:
-        self.members = []
+        self.members:list[Member] = []
         self.represntative = represntative
         self.add(represntative)
 

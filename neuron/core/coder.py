@@ -1,6 +1,6 @@
 import math 
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 import numpy as np
 import random
 
@@ -14,7 +14,7 @@ class SFEncoder:
         # Based on algorithm provided in:
         #   Petro et al. (2020)
         if not self.base:
-            self.base = signal
+            self.base = signal # type: ignore
             return 0, 0
 
         if signal > self.base + self.threshold:
@@ -55,8 +55,8 @@ class MWEncoder:
         # Based on algorithm provided in:
         #   Petro et al. (2020)
         if not self.base:
-            self.base = signal
-            self.window = np.full([self.window_size], self.base, dtype=np.float32)
+            self.base = signal # type: ignore
+            self.window = np.full([self.window_size], self.base, dtype=np.float32) # type: ignore
             return 0, 0
 
         if self.counter >= self.window_size:

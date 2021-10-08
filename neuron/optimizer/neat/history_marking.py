@@ -1,8 +1,7 @@
-from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.node_gene import NodeGene, NodeType
 from neuron.optimizer.neat.connection_gene import ConnectionGene
-
+from typing import Optional
 
 class HistoryMarking:
     def __init__(self) -> None:
@@ -21,7 +20,7 @@ class HistoryMarking:
     def create_new_node(self,node_type:'NodeType') ->'NodeGene':
         self.node_genes_counter += 1
         node = self.node_genes.put(NodeGene(self.node_genes_counter-1,node_type))
-        return node.clone()
+        return node.clone() # type: ignore
 
     def create_new_connection(self,input_innovation_number,output_innovation_number):
         self.connection_genes_counter += 1
@@ -37,7 +36,7 @@ class HistoryMarking:
     def add_output(self) -> 'NodeGene':
         return self.create_new_node(NodeType.OUTPUT)
     
-    def get_connection_gene(self, input_innovation_number:int, output_innovation_number:int) -> 'ConnectionGene':
+    def get_connection_gene(self, input_innovation_number:int, output_innovation_number:int) -> Optional[ConnectionGene]:
         # Return NONE if input = output
         if input_innovation_number == output_innovation_number:
             return None

@@ -1,5 +1,5 @@
-from solver import  Euler,RK4
-import matplotlib.pyplot as plt
+from solver import  Euler,RK4 # type: ignore
+import matplotlib.pyplot as plt # type: ignore
 
 global Vr, R, C, Tn
 
@@ -8,7 +8,7 @@ R = 10
 C = 0.1
 Tn = R*C
 
-t = 0
+
 
 def dvdt(v,_,I):
     return (-(v-Vr) + R*I)/Tn

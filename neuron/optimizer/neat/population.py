@@ -5,11 +5,11 @@ from neuron.optimizer.neat.genome import Genome
 
 class Population:
     def __init__(self,size:'int',evaluation_function) -> None:
-        self.population = []
-        self.species = []
+        self.population:list[Member] = []
+        self.species:list[Species] = []
         self.size = size
         self.evaluation_function = evaluation_function
-        self.best_genome = None
+        self.best_genome:Member = None #type: ignore
         self.best_fitness = Inf
         self.worst_fitness = 0
 

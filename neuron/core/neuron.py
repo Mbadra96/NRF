@@ -57,7 +57,7 @@ class Neuron:
         return self.s, self.v
 
 
-class OutputNeuron:    
+class OutputNeuron(Neuron):    
     def __init__(self,dt) -> None:
         self.v = 0
         self.refractory_state = False
@@ -92,7 +92,7 @@ class OutputNeuron:
         return self.s, self.v
 
 
-class InputNeuron:
+class InputNeuron(Neuron):
     TS = params['Ts']
     CSYN = params['Csyn']
 

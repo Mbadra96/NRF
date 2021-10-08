@@ -1,9 +1,9 @@
 from neuron.optimizer.neat.gene import Gene
-from multipledispatch import dispatch
+from multipledispatch import dispatch # type: ignore
 
 class ConnectionGene(Gene):
     @dispatch(int,int,int,float,bool)
-    def __init__(self, innovation_number,f,t,weight,enabled) -> None:
+    def __init__(self, innovation_number:int,f,t,weight,enabled) -> None:
         super().__init__(innovation_number)
         self.f = f
         self.t = t
@@ -16,7 +16,7 @@ class ConnectionGene(Gene):
     def get_to(self) -> int:
         return self.t
     
-    @dispatch(object)
+    @dispatch(object) # type: ignore
     def __init__(self, other: 'ConnectionGene') -> None:
         super().__init__(other)
         self.f = other.f

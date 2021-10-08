@@ -39,7 +39,7 @@ def false_position(f,x0,x1,e):
     
 from os import system
 clear = lambda: system('clear')
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 if __name__ == "__main__":
     clear()
     # print(func(0))

@@ -24,7 +24,6 @@ if __name__ == "__main__":
 
         # update population
         population.update(i == GENERATIONS, save_best=True)
-
         # print updates
         print(f"----- Generation {i+1} -----")
         print(f"Generation {i+1} Best = {population.best_fitness}")

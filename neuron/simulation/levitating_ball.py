@@ -1,12 +1,12 @@
-from neuron.core.coder import SFDecoder
+from neuron.core.coder import SFDecoder, MWDecoder
 from neuron.utils.functions import clamp_signal_to_spikes
 from neuron.core.params_loader import params
 from neuron.utils.units import *
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 import numpy as np
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+from plotly.subplots import make_subplots # type: ignore
+import plotly.graph_objects as go # type: ignore
 
 TIME = params["Evaluation_Time"] * sec
 TIMESTEP = params["Time_Step"] * ms  # dt is 0.5 ms
@@ -44,11 +44,12 @@ class LevitatingBall:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
+        # decoder = MWDecoder(20, output_base, output_decoder_threshold)
         cont = genome.build_phenotype(TIMESTEP)
 
         x_ref = 2
         x_dot_ref = 0
-        total_error = 0
+        total_error = 0.0
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
@@ -74,13 +75,13 @@ class LevitatingBall:
         cont = genome.build_phenotype(TIMESTEP)
 
         if show:
-            v1 = [0] * SAMPLES
-            v2 = [0] * SAMPLES
-            v3 = [0] * SAMPLES
+            v1 = [0.0] * SAMPLES
+            v2 = [0.0] * SAMPLES
+            v3 = [0.0] * SAMPLES
 
         x_ref = 2
         x_dot_ref = 0
-        total_error = 0
+        total_error = 0.0
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)

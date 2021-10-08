@@ -2,7 +2,7 @@ class Euler:
     @staticmethod 
     def step(func,x,t,dt,*args, **kwargs):
         x += func(x, t, *args, **kwargs) * dt
-        return x
+        return x, t 
 
 class RK4:
     @staticmethod        
@@ -12,4 +12,4 @@ class RK4:
         dx3 = func(x + dx2 * 0.5,t + dt * 0.5, *args, **kwargs) * dt
         dx4 = func(x + dx3,t + dt , *args, **kwargs) * dt
         x += 1 / 6 * (dx1 + dx2 * 2 + dx3 * 2 + dx4)
-        return x
+        return x, t

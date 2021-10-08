@@ -1,35 +1,47 @@
 import random
-from multipledispatch import dispatch
+from typing import List, Any, overload
 
 class Randomizer:
-    seed:'int' = 0
-
 
     @staticmethod
     def seed(seed):
         random.seed(seed)
     
+
     @staticmethod
-    @dispatch()
+    @overload
     def Float() -> float:
-        return random.random()
+        ...
 
-    @staticmethod  
-    @dispatch(float, float)
-    def Float(min,max) -> float:
-        return random.random()*(max - min) + min
+    @staticmethod
+    @overload
+    def Float(min:float,max:float) -> float:
+        ...
     
     @staticmethod
-    @dispatch()
+    def Float(*args,**kwargs):
+        if len(args) == 0 :
+            return random.random()
+        return random.random()*(args[1] - args[0]) + args[0]
+
+    @staticmethod
+    @overload
     def Integer()-> int :
-        return random.randint(0,9)
+        ...
 
     @staticmethod
-    @dispatch(int,int)
-    def Integer(min,max) -> int:
-        return random.randint(min, max)
-    
-    def choice(values):
+    @overload
+    def Integer(min:int,max:int) -> int:
+        ...
+
+    @staticmethod
+    def Integer(*args,**kwarg) -> int:
+        if len(args) == 0 :
+            return random.randint(0,9)
+        return random.randint(args[0], args[1])
+
+    @staticmethod   
+    def choice(values:List[Any]):
         if len(values) == 0:
             return None
         return random.choice(values)

@@ -1,7 +1,7 @@
 from math import sin, cos, pi
 import numpy as np
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+from plotly.subplots import make_subplots # type: ignore
+import plotly.graph_objects as go # type: ignore
 
 
 class BiCopter:

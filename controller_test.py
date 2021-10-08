@@ -1,6 +1,6 @@
 from neuron.core.controller import NeuroController
 from neuron.utils.units import *
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 from math import sin,pi
 import numpy as np
 TIME = 0.5 * sec

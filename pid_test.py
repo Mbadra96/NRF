@@ -1,7 +1,7 @@
 from neuron.utils.units import *
 from neuron.simulation.levitating_ball import LevitatingBall
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+from plotly.subplots import make_subplots # type: ignore
+import plotly.graph_objects as go # type: ignore
 import numpy as np
 from math import sin,pi
 
@@ -10,25 +10,25 @@ TIMESTEP = 0.5 * ms # dt is 0.1 ms
 SAMPLES = int(TIME/TIMESTEP)
 
 t = np.arange(0,TIME,TIMESTEP)
-v1 = [0]*SAMPLES
-v2 = [0]*SAMPLES
-v3 = [0]*SAMPLES
+v1 = [0.0]*SAMPLES
+v2 = [0.0]*SAMPLES
+v3 = [0.0]*SAMPLES
 
 print(f"Simulation of Neuron Pool for TIME = {TIME} sec and TIMESTEP = {TIMESTEP} ms with SAMPLES = {SAMPLES}")
 
-F = 0
+F = 0.0
 kp = 20
 ki = 10
 kd = 0.1
 x_ref = 2
 x_dot_ref = 0
-e_I = 0
-e_last = 0
-e_dot = 0
-total_error = 0
+e_I = 0.0
+e_last = 0.0
+e_dot = 0.0
+total_error = 0.0
 if __name__ == "__main__":
     ball = LevitatingBall(1,0,0)
-    total_F = 0
+    total_F = 0.0
     for i in range(SAMPLES):    
         v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
         e = (x_ref - v1[i]) + (x_dot_ref - v2[i])

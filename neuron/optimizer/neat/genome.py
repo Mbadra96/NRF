@@ -3,9 +3,9 @@ from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
 from neuron.core.neuro_controller import NeuroController
-from multipledispatch import dispatch
+from multipledispatch import dispatch # type: ignore
 import pickle
-from pyvis.network import Network
+from pyvis.network import Network # type: ignore
 
 
 class Genome:
@@ -18,17 +18,17 @@ class Genome:
 
     @dispatch()
     def __init__(self) -> None:
-        self.node_genes = GeneSet()
-        self.connection_genes = GeneSet()
-        self.history_marking = None
+        self.node_genes:GeneSet = GeneSet()
+        self.connection_genes:GeneSet = GeneSet()
+        self.history_marking:HistoryMarking = None
         
-    @dispatch(object)
+    @dispatch(object) # type: ignore
     def __init__(self,other:'Genome') -> None:
         self.node_genes = other.node_genes.clone()
         self.connection_genes = other.connection_genes.clone()
         self.history_marking = other.history_marking
 
-    @dispatch(object,object,object)
+    @dispatch(object,object,object) # type: ignore
     def __init__(self,node_genes:'GeneSet',connection_genes:'GeneSet',history_marking:'HistoryMarking') -> None:
         self.node_genes = node_genes
         self.connection_genes = connection_genes
@@ -253,7 +253,7 @@ class Genome:
             elif gene.type == NodeType.OUTPUT:
                 outputs.append(i)
 
-        connection_matrix = [[]]
+        connection_matrix:list[list[float]] = [[]]
         for i in range(n):
             for j in range(n):
                 connection_matrix[i].append(0.0)

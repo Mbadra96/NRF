@@ -1,6 +1,6 @@
 from neuron.optimizer.neat.gene import Gene
 from enum import Enum
-from multipledispatch import dispatch
+from multipledispatch import dispatch # type: ignore
 
 class NodeType(Enum):
     INPUT = 1
@@ -18,7 +18,7 @@ class NodeGene(Gene):
             raise TypeError(f"invaled object excepted GeneType but {type.__class__.__name__} was given instead")
 
 
-    @dispatch(object)
+    @dispatch(object) # type: ignore
     def __init__(self, other: 'NodeGene') -> None:
         super().__init__(other)
         self.type = other.type
@@ -27,4 +27,4 @@ class NodeGene(Gene):
         return NodeGene(self)
     
     def __str__(self) -> str:
-        return f"NodeGene {{type={self.type.name},innovationNumber = {self.innovation_number}}}"
+        return f"NodeGene {{type={self.type.name},innovationNumber = {self.innovation_number}}}" # type: ignore
