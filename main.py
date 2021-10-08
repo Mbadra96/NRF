@@ -1,5 +1,5 @@
-from testing.disturbance_test import DisturbanceTest
+from testing.bicopter_test import BiCopterTest
 
 if __name__ == '__main__':
-    t = DisturbanceTest()
-    t.start()
+    t = BiCopterTest()
+    t.run()
