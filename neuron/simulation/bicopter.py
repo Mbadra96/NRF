@@ -1,6 +1,5 @@
 from neuron.optimizer.neat.genome import Genome
-from neuron.core.coder import SFDecoder
-from neuron.utils.functions import clamp_signal_to_spikes
+from neuron.core.coder import SFDecoder, ClampEncoder
 from neuron.core.params_loader import params
 from neuron.utils.units import *
 from math import sin, cos, pi
@@ -72,7 +71,7 @@ class BiCopter:
 
     @staticmethod
     def evaluate_genome(genome: Genome) -> float:
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 0.01
         output_base = 0.8127610321343152
         decoder_1 = SFDecoder(output_base, output_decoder_threshold)
         decoder_2 = SFDecoder(output_base, output_decoder_threshold)
@@ -85,13 +84,13 @@ class BiCopter:
         roll = 1.0
         roll_dot = 0.0
         copter = BiCopter(roll_0=roll)
-
+        encoder = ClampEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
             e = (roll - roll_ref) + (roll_dot - roll_dot_ref) #+ Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((roll - roll_ref) / 10.0)
             ###########################
-            out = cont.step(clamp_signal_to_spikes(e), t[i], TIMESTEP)
+            out = cont.step(encoder.encode(e), t[i], TIMESTEP)
             w1 = decoder_1.decode(out[0],out[1])  # Controller
             w2 = decoder_2.decode(out[2],out[3])  # Controller
             _, _, _, roll_dot, _, _, _, roll = copter.step(w1, w2, t[i], TIMESTEP)  # Model
@@ -100,7 +99,7 @@ class BiCopter:
 
     @staticmethod
     def evaluate_genome_with_figure(genome: Genome, fig=None) -> go.Figure:
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 0.01
         output_base = 0.8127610321343152
         decoder_1 = SFDecoder(output_base, output_decoder_threshold)
         decoder_2 = SFDecoder(output_base, output_decoder_threshold)
@@ -118,13 +117,13 @@ class BiCopter:
         v2 = [0.0] * SAMPLES
         v3 = [0.0] * SAMPLES
         v4 = [0.0] * SAMPLES
-
+        encoder = ClampEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
             e = (roll - roll_ref) + (roll_dot - roll_dot_ref) #+ Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((roll - roll_ref) / 10.0)
             ###########################
-            out = cont.step(clamp_signal_to_spikes(e), t[i], TIMESTEP)
+            out = cont.step(encoder.encode(e), t[i], TIMESTEP)
             w1 = decoder_1.decode(out[0],out[1])  # Controller
             w2 = decoder_2.decode(out[2],out[3])  # Controller
             _, _, _, roll_dot, _, _, _, roll = copter.step(w1, w2, t[i], TIMESTEP)  # Model
@@ -155,7 +154,7 @@ class BiCopter:
             go.Scatter(x=t, y=v4, name=f"w2"),
             row=4, col=1
         )
-        fig.update_layout(height=720, width=1080, title_text="Disturbance Test")
+        fig.update_layout(height=720, width=1080, title_text="")
 
         return fig
 

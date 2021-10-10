@@ -1,4 +1,4 @@
-from neuron.core.coder import SFDecoder, MWDecoder
+from neuron.core.coder import ClampEncoder, SFDecoder, MWDecoder
 from neuron.utils.functions import clamp_signal_to_spikes
 from neuron.core.params_loader import params
 from neuron.utils.units import *
@@ -85,15 +85,13 @@ class LevitatingBall:
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-
+        encoder = ClampEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
             e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((x_ref - x) / 10.0)
-            ###########################
-            sensors = [*clamp_signal_to_spikes(e)]
             ######################
-            F = decoder.decode(*cont.step(sensors, t[i], TIMESTEP))  # Controller
+            F = decoder.decode(*cont.step(encoder.encode(e), t[i], TIMESTEP))  # Controller
             x, x_dot = ball.step(F, t[i], TIMESTEP)  # Model
 
             if show:

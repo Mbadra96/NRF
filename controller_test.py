@@ -1,36 +1,24 @@
-from neuron.core.controller import NeuroController
-from neuron.utils.units import *
-import matplotlib.pyplot as plt # type: ignore
-from math import sin,pi
 import numpy as np
-TIME = 0.5 * sec
-TIMESTEP = 0.5 * ms # dt is 0.1 ms
-SAMPLES = int(TIME/TIMESTEP)
+from scipy import signal # type: ignore
+from scipy.stats import norm # type: ignore
+import matplotlib.pyplot as plt #type: ignore
 
-t = np.arange(0,TIME,TIMESTEP)
-v1 = [0]*SAMPLES
-v2 = [0]*SAMPLES
+hsa_window = [12, 15, 12]
+hsa_fir = list()
+hsa_fir.append(signal.triang(hsa_window[0]))
+hsa_fir.append(norm.pdf(np.linspace(1, hsa_window[1], hsa_window[1]), 0, 5))
+hsa_fir.append(signal.triang(hsa_window[2]))
+
+hsa_m_thresholds = [0.85, 0.05, 0.5]
+
+bsa_window = [9, 10, 8]
+bsa_fir = list()
+bsa_fir.append(signal.triang(bsa_window[0]))
+bsa_fir.append(norm.pdf(np.linspace(1, bsa_window[1], bsa_window[1]), 1.5, 3.5))
+bsa_fir.append(signal.triang(bsa_window[2]))
 
 
-print(f"Simulation of Neuron Controller for TIME = {TIME} sec and TIMESTEP = {TIMESTEP} s with SAMPLES = {SAMPLES}")
-
-
-if __name__ == "__main__":
-    n = NeuroController([[0,2],[0,0]],[0],[1],TIMESTEP)
-
-    for i in range(SAMPLES):
-        output = n.step([1],t[i],TIMESTEP)
-        print(output)
-        v1[i] = output[0][0]
-        v2[i] = output[0][1]
-
-    plt.subplot(211)
-    plt.plot(t,v1)
-    plt.grid()
-    
-    plt.subplot(212)
-    plt.plot(t,v2)
-    plt.grid()
-    
-    plt.show()    
-       
+plt.plot(bsa_fir[0])
+plt.plot(bsa_fir[1])
+plt.plot(bsa_fir[2])
+plt.show()

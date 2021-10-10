@@ -2,7 +2,7 @@ from neuron.core.neuro_controller import NeuroController
 from neuron.simulation.levitating_ball import LevitatingBall
 from neuron.utils.randomizer import Randomizer
 from neuron.utils.units import *
-from neuron.core.coder import SFDecoder
+from neuron.core.coder import SFDecoder, ClampEncoder
 import numpy as np
 from neuron.optimizer.neat.genome import Genome
 from plotly.subplots import make_subplots # type: ignore
@@ -12,15 +12,6 @@ TIME = 5 * sec
 TIMESTEP = 0.5 * ms  # dt is 0.5 ms
 SAMPLES = int(TIME / TIMESTEP)
 t = np.arange(0, TIME, TIMESTEP)
-
-
-def clamp(e):
-    if e > 0:
-        return 1, 0
-    elif e < 0:
-        return 0, 1
-    else:
-        return 0, 0
 
 
 def eval_func(genome, show: bool = False, mass=1.0) -> float:
@@ -52,14 +43,14 @@ def eval_func(genome, show: bool = False, mass=1.0) -> float:
     x_dot = 0
     e_I = 0.0
     ball = LevitatingBall(mass, x, x_dot)
-
+    encoder = ClampEncoder()
     # Simulation Loop
     for i in range(SAMPLES):
         e = (x_ref - x) + (x_dot_ref - x_dot)
         e_I += 0.00001 * e
         total_error += abs((x_ref - x) / 10.0)
         ###########################
-        sensors = [*clamp(e)]
+        sensors = encoder.encode(e)
         ######################
         F = decoder.decode(*cont.step(sensors, t[i], TIMESTEP))  # Controller
 
@@ -118,13 +109,13 @@ def _ball_levitation_eval_func_testing(genome, show: bool = False, mass: float =
     x = 0
     x_dot = 0
     ball = LevitatingBall(mass, x, x_dot)
-
+    encoder = ClampEncoder()
     # Simulation Loop
     for i in range(SAMPLES):
         e = (x_ref - x) + (x_dot_ref - x_dot)
         total_error += abs((x_ref - x) / 10.0)
         ###########################
-        sensors = [*clamp(e)]
+        sensors = encoder.encode(e)
         ######################
         F = decoder.decode(*cont.step(sensors, t[i], TIMESTEP))  # Controller
         # F = 10*output[0] - 10*output[1] + 9.81
