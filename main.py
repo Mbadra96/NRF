@@ -1,5 +1,8 @@
-from testing.bicopter_test import BiCopterTest
+from scenarios.scenario_01.scenario import Scenario01
 
-if __name__ == '__main__':
-    t = BiCopterTest()
-    t.run()
+
+if __name__ == "__main__":
+    scenario = Scenario01()
+    scenario.run()
+    scenario.visualize_and_save()
+    

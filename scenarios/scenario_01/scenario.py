@@ -1,0 +1,119 @@
+from typing import Union
+import numpy as np
+from plotly.subplots import make_subplots # type: ignore
+import plotly.graph_objects as go # type: ignore
+from pathlib import Path # type: ignore
+
+from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.params_loader import params
+from neuron.utils.units import ms, sec 
+from neuron.utils.randomizer import Randomizer
+from neuron.optimizer.neat.genome import Genome
+from neuron.optimizer.neat.core import Neat
+from neuron.simulation.levitating_ball import LevitatingBall
+
+
+POPULATION_SIZE = 50
+GENERATIONS = 50
+TIME = params["Evaluation_Time"] * sec
+TIMESTEP = params["Time_Step"] * ms  # dt is 0.5 ms
+SAMPLES = int(TIME / TIMESTEP)
+t = np.arange(0, TIME, TIMESTEP)
+
+
+class Scenario01:
+    """
+    Scenario 01:
+                Task : Ball Leviation
+                Encoder : Clamp
+                Decoder : Step-Forward
+                Case : Reference Tracking & Central Error
+    """
+    def __init__(self) -> None:
+        # Set Random seed
+        Randomizer.seed(0)
+
+        # init NEAT
+        self.neat = Neat(2, 2)
+
+        # Generate Population
+        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
+
+        # Print Start Message
+        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
+
+    @staticmethod
+    def fitness_function(genome: Genome, mass: float = 1.0, disturbance_magnitude: float = 0.0,
+                        visualize:bool = False, fig: go.Figure = None) -> Union[float, go.Figure]:
+        output_decoder_threshold = 1
+        output_base = 9.81
+        decoder = SFDecoder(output_base, output_decoder_threshold)
+        cont = genome.build_phenotype(TIMESTEP)
+        if visualize:
+            v1 = [0.0] * SAMPLES
+            v2 = [0.0] * SAMPLES
+            v3 = [0.0] * SAMPLES
+
+        x_ref = 2
+        x_dot_ref = 0
+        total_error = 0.0
+        x = 0
+        x_dot = 0
+        ball = LevitatingBall(mass, x, x_dot)
+        encoder = ClampEncoder()
+        # Simulation Loop
+        for i in range(SAMPLES):
+            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            total_error += abs((x_ref - x) / 10.0)
+            ######################
+            f = decoder.decode(*cont.step(encoder.encode(e), t[i], TIMESTEP))  # Controller
+            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
+            
+            if visualize:
+                v1[i], v2[i] = x, x_dot
+                v3[i] = f
+        if visualize:
+            if not fig:
+                fig = make_subplots(rows=3, cols=1, subplot_titles=("X", "X Dot", "Force"))
+
+            fig.add_trace(
+                go.Scatter(x=t, y=v1, name="X"),
+                row=1, col=1
+            )
+
+            fig.add_trace(
+                go.Scatter(x=t, y=v2, name="X Dot"),
+                row=2, col=1
+            )
+
+            fig.add_trace(
+                go.Scatter(x=t, y=v3, name="Force"),
+                row=3, col=1
+            )
+            fig.update_layout(height=720, width=1080, title_text="Scenario 01")
+
+            return fig
+
+        return total_error
+
+    def run(self) -> None:
+        file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        for i in range(GENERATIONS):
+
+            # update population
+            self.population.update(i == GENERATIONS, save_file_name=file_name)
+            # print updates
+            print(f"----- Generation {i+1} -----")
+            print(f"Generation {i+1} Best = {self.population.best_fitness}")
+            print(f"Generation {i+1} Worst = {self.population.worst_fitness}")
+
+        print("-------------------------------------")
+        print(f"No OF Species = {self.population.get_species_size()}")
+
+    def visualize_and_save(self):
+        file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        genome: Genome = Genome.load(file_name)
+        fig = self.fitness_function(genome,visualize=True)
+        fig.show()
+        fig.write_image(f"{file_name}.png") 
+

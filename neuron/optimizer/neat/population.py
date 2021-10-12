@@ -78,7 +78,7 @@ class Population:
             species.sort()
             species.eliminate()
 
-    def update(self, is_last: bool, save_best: bool = False):
+    def update(self, is_last: bool, save_file_name: str = "best"):
         # Evaluate all members in population
         
         for member in self.population:
@@ -92,5 +92,5 @@ class Population:
 
         # self.print_fitness(generation_number)
 
-        if save_best:
-            self.best_genome.genome.save("best")
+        if save_file_name:
+            self.best_genome.genome.save(save_file_name)

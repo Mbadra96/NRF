@@ -3,7 +3,7 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 # Set Optimization Variables
-POPULATION_SIZE = 10
+POPULATION_SIZE = 50
 GENERATIONS = 50
 
 class LevitatingBallTest:
