@@ -13,7 +13,7 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 
-POPULATION_SIZE = 10
+POPULATION_SIZE = 20
 GENERATIONS = 50
 TIME = params["Evaluation_Time"] * sec
 TIMESTEP = params["Time_Step"] * ms  # dt is 0.5 ms
@@ -21,20 +21,20 @@ SAMPLES = int(TIME / TIMESTEP)
 t = np.arange(0, TIME, TIMESTEP)
 
 
-class Scenario01:
+class Scenario02:
     """
     Scenario 01:
                 Task : Ball Leviation
                 Encoder : Clamp
                 Decoder : Step-Forward
-                Case : Reference Tracking & Central Error
+                Case : Reference Tracking & distributed Error
     """
     def __init__(self) -> None:
         # Set Random seed
         Randomizer.seed(0)
 
         # init NEAT
-        self.neat = Neat(2, 2)
+        self.neat = Neat(4, 2)
 
         # Generate Population
         self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
@@ -60,13 +60,16 @@ class Scenario01:
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-        encoder = ClampEncoder()
+        encoder_1 = ClampEncoder()
+        encoder_2 = ClampEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e1 = (x_ref - x) 
+            e2 = (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
-            f = decoder.decode(*cont.step(encoder.encode(e), t[i], TIMESTEP))  # Controller
+            e = [*encoder_1.encode(e1),*encoder_2.encode(e2)]
+            f = decoder.decode(*cont.step(e, t[i], TIMESTEP))  # Controller
             x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
             
             if visualize:
@@ -90,14 +93,14 @@ class Scenario01:
                 go.Scatter(x=t, y=v3, name="Force"),
                 row=3, col=1
             )
-            fig.update_layout(height=720, width=1080, title_text="Scenario 01")
+            fig.update_layout(height=720, width=1080, title_text="Scenario 02")
 
             return fig
 
         return total_error
 
     def run(self) -> None:
-        file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        file_name = f"{Path().absolute()}/scenarios/scenario_02/scenario_02"
         for i in range(GENERATIONS):
 
             # update population
@@ -111,7 +114,7 @@ class Scenario01:
         print(f"No OF Species = {self.population.get_species_size()}")
 
     def visualize_and_save(self,ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0):
-        file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        file_name = f"{Path().absolute()}/scenarios/scenario_02/scenario_02"
         genome: Genome = Genome.load(file_name)
         fig:go.Figure = self.fitness_function(genome,ref=ref, visualize=True, mass=mass, disturbance_magnitude=disturbance_magnitude)
         fig.show()
