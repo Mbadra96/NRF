@@ -17,11 +17,13 @@ class Randomizer:
     @overload
     def Float(min:float,max:float) -> float:
         ...
-    
+
     @staticmethod
     def Float(*args,**kwargs):
         if len(args) == 0 :
             return random.random()
+        if args[0] == args[1]:
+            return args[0]
         return random.random()*(args[1] - args[0]) + args[0]
 
     @staticmethod

@@ -1,8 +1,8 @@
 from typing import Union
+from pathlib import Path # type: ignore
 import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
-from pathlib import Path # type: ignore
 
 from neuron.core.coder import ClampEncoder, SFDecoder
 from neuron.core.params_loader import params
@@ -13,7 +13,7 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 
-POPULATION_SIZE = 50
+POPULATION_SIZE = 10
 GENERATIONS = 50
 TIME = params["Evaluation_Time"] * sec
 TIMESTEP = params["Time_Step"] * ms  # dt is 0.5 ms
@@ -43,7 +43,7 @@ class Scenario01:
         print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
     @staticmethod
-    def fitness_function(genome: Genome, mass: float = 1.0, disturbance_magnitude: float = 0.0,
+    def fitness_function(genome: Genome, ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0,
                         visualize:bool = False, fig: go.Figure = None) -> Union[float, go.Figure]:
         output_decoder_threshold = 1
         output_base = 9.81
@@ -54,7 +54,7 @@ class Scenario01:
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
 
-        x_ref = 2
+        x_ref = ref
         x_dot_ref = 0
         total_error = 0.0
         x = 0
@@ -64,7 +64,7 @@ class Scenario01:
         # Simulation Loop
         for i in range(SAMPLES):
             e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            total_error += abs((x_ref - x) / 10.0)
+            total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
             f = decoder.decode(*cont.step(encoder.encode(e), t[i], TIMESTEP))  # Controller
             x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
@@ -110,10 +110,10 @@ class Scenario01:
         print("-------------------------------------")
         print(f"No OF Species = {self.population.get_species_size()}")
 
-    def visualize_and_save(self):
+    def visualize_and_save(self,ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0):
         file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
         genome: Genome = Genome.load(file_name)
-        fig = self.fitness_function(genome,visualize=True)
+        fig:go.Figure = self.fitness_function(genome,ref=ref, visualize=True, mass=mass, disturbance_magnitude=disturbance_magnitude)
         fig.show()
         fig.write_image(f"{file_name}.png") 
 
