@@ -3,9 +3,9 @@ from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
 from neuron.core.neuro_controller import NeuroController
-from multipledispatch import dispatch # type: ignore
+from multipledispatch import dispatch  # type: ignore
 import pickle
-from pyvis.network import Network # type: ignore
+from pyvis.network import Network  # type: ignore
 
 
 class Genome:
@@ -18,23 +18,22 @@ class Genome:
 
     @dispatch()
     def __init__(self) -> None:
-        self.node_genes:GeneSet = GeneSet()
-        self.connection_genes:GeneSet = GeneSet()
-        self.history_marking:HistoryMarking = None
+        self.node_genes: GeneSet = GeneSet()
+        self.connection_genes: GeneSet = GeneSet()
+        self.history_marking: HistoryMarking = None
         
-    @dispatch(object) # type: ignore
-    def __init__(self,other:'Genome') -> None:
+    @dispatch(object)  # type: ignore
+    def __init__(self, other: 'Genome') -> None:
         self.node_genes = other.node_genes.clone()
         self.connection_genes = other.connection_genes.clone()
         self.history_marking = other.history_marking
 
-    @dispatch(object,object,object) # type: ignore
-    def __init__(self,node_genes:'GeneSet',connection_genes:'GeneSet',history_marking:'HistoryMarking') -> None:
+    @dispatch(object, object, object)  # type: ignore
+    def __init__(self, node_genes: 'GeneSet', connection_genes: 'GeneSet', history_marking: 'HistoryMarking') -> None:
         self.node_genes = node_genes
         self.connection_genes = connection_genes
         self.history_marking = history_marking
-        
-        
+
     def mutate_node(self):
         
         selected_connection_gene = self.connection_genes.get_random_gene()
@@ -75,13 +74,14 @@ class Genome:
         new_connection_gene = self.history_marking.get_connection_gene(g1.innovation_number,g2.innovation_number)
 
         if new_connection_gene:
+            new_connection_gene.weight = Randomizer.Float(-1.0, 1.0)
             self.connection_genes.put(new_connection_gene)
 
     def mutate_weight(self):
-        self.connection_genes.get_random_gene().weight = Randomizer.Float(-1.0,1.0)
+        self.connection_genes.get_random_gene().weight = Randomizer.Float(-1.0, 1.0)
 
-    def mutate(self) ->'Genome':
-        random_number = Randomizer.Integer(0,100)
+    def mutate(self) -> 'Genome':
+        random_number = Randomizer.Integer(0, 100)
 
         if random_number < Genome.NODEMUTATIONPROBABILITY:
             self.mutate_node()
@@ -95,8 +95,9 @@ class Genome:
     def get_mutated_child(self) -> 'Genome':
         return self.clone().mutate()
 
-    def crossover(self,other:'Genome') ->'Genome':
-        if self == other : return self.clone()
+    def crossover(self, other: 'Genome') -> 'Genome':
+        if self == other:
+            return self.clone()
 
         # Create Node Genes
         new_node_genes = GeneSet()
@@ -109,7 +110,7 @@ class Genome:
             if other.node_genes.contains(node_gene.innovation_number):
                 found_in_g2 = True
 
-            if  found_in_g1 and found_in_g2 :
+            if found_in_g1 and found_in_g2 :
                 if Randomizer.Integer(0,100) <= 50:
                     new_node_genes.put(self.node_genes.get(node_gene.innovation_number).clone())
                 else:
@@ -152,9 +153,8 @@ class Genome:
 
         return Genome(new_node_genes,new_connection_genes,self.history_marking)
 
-   
-    def get_distance(self,other:'Genome') -> 'float':
-        if (self == other):
+    def get_distance(self, other: 'Genome') -> 'float':
+        if self == other:
             return 0.0
 
         no_of_disjoint_genes = 0
@@ -235,25 +235,24 @@ class Genome:
         abs_sum_of_weights = abs(weight_sum_1 - weight_sum_2)
 
         return (Genome.C1*no_of_disjoint_genes/no_of_genes) + (Genome.C2*no_of_excess_genes/no_of_genes) + Genome.C3*abs_sum_of_weights
-        
 
-    def clone(self) ->'Genome':
+    def clone(self) -> 'Genome':
         return Genome(self)
 
     def __str__(self) -> str:
-                return "Genome {\n" + str(self.node_genes) + "\n" + str(self.connection_genes) + "\n\t}" 
+        return "Genome {\n" + str(self.node_genes) + "\n" + str(self.connection_genes) + "\n\t}"
 
     def build_phenotype(self, time_step) -> 'NeuroController':
         n = self.history_marking.node_genes_counter
         inputs = []
         outputs = []
-        for i,gene in enumerate(self.history_marking.node_genes):
+        for i, gene in enumerate(self.history_marking.node_genes):
             if gene.type == NodeType.INPUT:
                 inputs.append(i)
             elif gene.type == NodeType.OUTPUT:
                 outputs.append(i)
 
-        connection_matrix:list[list[float]] = [[]]
+        connection_matrix: list[list[float]] = [[]]
         for i in range(n):
             for j in range(n):
                 connection_matrix[i].append(0.0)
@@ -266,8 +265,9 @@ class Genome:
                 
         return NeuroController(connection_matrix,inputs,outputs,time_step)
 
-    def visualize(self, name:str='genome'):
+    def visualize(self, name: str = 'genome'):
         self.net = Network(directed=True)
+        self.net.toggle_physics(False)
 
         for node in self.node_genes:
             if node.type == NodeType.INPUT:
@@ -284,14 +284,13 @@ class Genome:
 
         self.net.show(name+".html")
 
-
-    def save(self,name:str="untitled"):
+    def save(self, name : str = "untitled"):
         f = open(f'{name}.genome', 'wb')
         pickle.dump(self, f)
         f.close()
 
     @staticmethod
-    def load(name:str="untitled"):
+    def load(name: str = "untitled"):
         f = open(f'{name}.genome', 'rb')
         g = pickle.load(f)
         f.close()

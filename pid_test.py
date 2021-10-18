@@ -20,7 +20,7 @@ F = 0.0
 kp = 20
 ki = 10
 kd = 0.1
-x_ref = 2
+x_ref = 1
 x_dot_ref = 0
 e_I = 0.0
 e_last = 0.0
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
         e = (x_ref - v1[i]) + (x_dot_ref - v2[i])
         e_I += e
-        total_error += abs((x_ref - v1[i])/10.0) 
+        total_error += abs((x_ref - v1[i])/10.0) + abs(x_dot_ref - v2[i])/10
         v3[i] = F
         e_dot = (e - e_last)/TIMESTEP
         F = (kp * e )+ (ki * e_I) + (kd * e_dot)

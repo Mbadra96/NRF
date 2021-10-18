@@ -34,7 +34,7 @@ class Scenario03:
         # Print Start Message
         print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_03/scenario_03"
 
     @staticmethod
     def fitness_function(genome: Genome, ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0,
@@ -93,7 +93,8 @@ class Scenario03:
             fig['layout']['yaxis2']['title'] = 'x dot (m/s)' 
             fig['layout']['yaxis3']['title'] = 'force (N)' 
             return fig
-
+        if x == 0.0 and x_dot == 0.0:
+            return 10000
         return total_error
 
     def run(self) -> None:
@@ -129,4 +130,5 @@ class Scenario03:
                                               disturbance_magnitude=disturbance_magnitude,
                                               scenario=self.__class__.__name__)
         fig.show()
-        fig.write_image(f"{self.file_name}.png") 
+        fig.write_image(f"{self.file_name}.png")
+        genome.visualize(self.file_name)

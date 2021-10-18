@@ -93,6 +93,8 @@ class Scenario02:
             fig['layout']['yaxis2']['title'] = 'x dot (m/s)' 
             fig['layout']['yaxis3']['title'] = 'force (N)' 
             return fig
+        if x == 0.0 and x_dot == 0.0:
+            return 10000
 
         return total_error
 
@@ -131,7 +133,8 @@ class Scenario02:
                                               disturbance_magnitude=disturbance_magnitude,
                                               scenario=self.__class__.__name__)
         fig.show()
-        fig.write_image(f"{self.file_name}.png") 
+        fig.write_image(f"{self.file_name}.png")
+        genome.visualize(self.file_name)
 
 
 

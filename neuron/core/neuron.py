@@ -31,7 +31,7 @@ class Neuron:
 
         # update (v) based on input current and connected synapses
         if not self.refractory_state:
-            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(self.Isyn)) # update (v) using Euler Method
+            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*self.Isyn)  # update (v) using Euler Method
 
         # update spike trains
         if self.v >= 1.0:
@@ -42,15 +42,6 @@ class Neuron:
         else:
             self.s = False
 
-        # decoding output
-        # self.potential_kernel[self.counter] = self.s
-        # self.rate = self.potential_kernel.sum()/self.n_max
-        
-        # self.counter += 1
-        
-        # if self.counter >= self.kernel:
-        #     self.counter = 0
-            
         self.Isyn = 0
         self.refractory_counter -= 1
 

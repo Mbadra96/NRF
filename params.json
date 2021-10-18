@@ -2,12 +2,11 @@
   "Vr": 0,
   "R": 10,
   "Tn": 10,
-  "Ts": 1,
+  "Ts": 0,
   "Csyn":2,
   "RP": 2.0,
-  "Kernel":20,
   "Evaluation_Time": 5,
   "Time_Step": 0.5,
   "Generation":50,
-  "PopulationNumber":100
+  "PopulationNumber":50
 }

@@ -4,13 +4,13 @@ import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
+
 from neuron.core.coder import ClampEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
-
 
 
 class Scenario01:
@@ -42,6 +42,7 @@ class Scenario01:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
+        encoder = ClampEncoder()
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES
@@ -54,7 +55,7 @@ class Scenario01:
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-        encoder = ClampEncoder()
+
         # Simulation Loop
         for i in range(SAMPLES):
             e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
@@ -98,7 +99,7 @@ class Scenario01:
 
     def run(self) -> None:
         
-        convergence:list[float] = []
+        convergence: list[float] = []
 
         for i in range(GENERATIONS):
 
@@ -106,20 +107,21 @@ class Scenario01:
             self.population.update(i == GENERATIONS, save_file_name=self.file_name)
             convergence.append(self.population.best_fitness)
             # print updates
-            print(f"----- Generation {i+1} -----")
-            print(f"Generation {i+1} Best = {self.population.best_fitness}")
-            print(f"Generation {i+1} Worst = {self.population.worst_fitness}")
+            s = f"----- Generation {i+1} -----\n"
+            s += f"Generation {i+1} Best = {self.population.best_fitness}\n"
+            s += f"Generation {i+1} Worst = {self.population.worst_fitness}\n"
+            print(s)
 
         print("-------------------------------------")
         print(f"No OF Species = {self.population.get_species_size()}")
         fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence)+1, 1),y=convergence))
         fig.update_layout(height=720, width=1080, title_text=f"{self.__class__.__name__} Convergence")
         fig.update_xaxes(dtick=1)
-        fig['layout']['yaxis']['title'] = 'fitness' 
-        fig['layout']['xaxis']['title'] = 'generation' 
-        
+        fig['layout']['yaxis']['title'] = 'fitness'
+        fig['layout']['xaxis']['title'] = 'generation'
+
         fig.show()
-        fig.write_image(f"{self.file_name}_convergence_curve.png") 
+        fig.write_image(f"{self.file_name}_convergence_curve.png")
     def visualize_and_save(self,ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0):
         genome: Genome = Genome.load(self.file_name)
         fig:go.Figure = self.fitness_function(genome,
@@ -130,3 +132,4 @@ class Scenario01:
                                               scenario=self.__class__.__name__)
         fig.show()
         fig.write_image(f"{self.file_name}.png") 
+        genome.visualize(self.file_name)
