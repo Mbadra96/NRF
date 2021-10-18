@@ -4,7 +4,7 @@ import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import ClampEncoder, MWDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -12,36 +12,34 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 
-
-class Scenario01:
+class Scenario04:
     """
-    Scenario 01:
+    Scenario 04:
                 Task : Ball Leviation
                 Encoder : Clamp
-                Decoder : Step-Forward
-                Case : Reference Tracking & Central Error
+                Decoder : Moving-Window
+                Case : Reference Tracking & distributed Error
     """
     def __init__(self) -> None:
         # Set Random seed
         Randomizer.seed(0)
 
         # init NEAT
-        self.neat = Neat(2, 2)
+        self.neat = Neat(4, 2)
 
         # Generate Population
         self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
 
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_02/scenario_02"
         # Print Start Message
         print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
-
     @staticmethod
     def fitness_function(genome: Genome, ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0,
-                        visualize:bool = False, fig: go.Figure = None, scenario: str = "" ) -> Union[float, go.Figure]:
+                        visualize:bool = False, fig: go.Figure = None,scenario: str = "") -> Union[float, go.Figure]:
         output_decoder_threshold = 1
         output_base = 9.81
-        decoder = SFDecoder(output_base, output_decoder_threshold)
+        decoder = MWDecoder(10, output_base, output_decoder_threshold)
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES
@@ -54,15 +52,17 @@ class Scenario01:
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-        encoder = ClampEncoder()
+        encoder_1 = ClampEncoder()
+        encoder_2 = ClampEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e1 = (x_ref - x) 
+            e2 = (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
-            f = decoder.decode(*cont.step(encoder.encode(e), t[i], TIMESTEP))  # Controller
+            e = [*encoder_1.encode(e1),*encoder_2.encode(e2)]
+            f = decoder.decode(*cont.step(e, t[i], TIMESTEP))  # Controller
             x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
-            
             if visualize:
                 v1[i], v2[i] = x, x_dot
                 v3[i] = f
@@ -96,6 +96,7 @@ class Scenario01:
 
         return total_error
 
+
     def run(self) -> None:
         
         convergence:list[float] = []
@@ -120,6 +121,7 @@ class Scenario01:
         
         fig.show()
         fig.write_image(f"{self.file_name}_convergence_curve.png") 
+    
     def visualize_and_save(self,ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0):
         genome: Genome = Genome.load(self.file_name)
         fig:go.Figure = self.fitness_function(genome,
@@ -130,3 +132,6 @@ class Scenario01:
                                               scenario=self.__class__.__name__)
         fig.show()
         fig.write_image(f"{self.file_name}.png") 
+
+
+

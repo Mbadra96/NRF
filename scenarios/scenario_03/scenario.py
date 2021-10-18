@@ -4,7 +4,7 @@ import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import ClampEncoder, MWDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -13,12 +13,12 @@ from neuron.simulation.levitating_ball import LevitatingBall
 
 
 
-class Scenario01:
+class Scenario03:
     """
-    Scenario 01:
+    Scenario 03:
                 Task : Ball Leviation
                 Encoder : Clamp
-                Decoder : Step-Forward
+                Decoder : Moving-Window
                 Case : Reference Tracking & Central Error
     """
     def __init__(self) -> None:
@@ -41,7 +41,7 @@ class Scenario01:
                         visualize:bool = False, fig: go.Figure = None, scenario: str = "" ) -> Union[float, go.Figure]:
         output_decoder_threshold = 1
         output_base = 9.81
-        decoder = SFDecoder(output_base, output_decoder_threshold)
+        decoder = MWDecoder(10, output_base, output_decoder_threshold)
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES

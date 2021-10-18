@@ -7,5 +7,7 @@
   "RP": 2.0,
   "Kernel":20,
   "Evaluation_Time": 5,
-  "Time_Step": 0.5
+  "Time_Step": 0.5,
+  "Generation":50,
+  "PopulationNumber":100
 }
