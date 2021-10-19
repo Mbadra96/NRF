@@ -16,7 +16,7 @@ from neuron.simulation.levitating_ball import LevitatingBall
 class Scenario01:
     """
     Scenario 01:
-                Task : Ball Leviation
+                Task : Ball Levitation
                 Encoder : Clamp
                 Decoder : Step-Forward
                 Case : Reference Tracking & Central Error
@@ -94,6 +94,8 @@ class Scenario01:
             fig['layout']['yaxis2']['title'] = 'x dot (m/s)' 
             fig['layout']['yaxis3']['title'] = 'force (N)' 
             return fig
+        if x == 0.0 and x_dot == 0.0:
+            return 10000
 
         return total_error
 

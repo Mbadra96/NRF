@@ -81,14 +81,17 @@ class Genome:
         self.connection_genes.get_random_gene().weight = Randomizer.Float(-1.0, 1.0)
 
     def mutate(self) -> 'Genome':
-        random_number = Randomizer.Integer(0, 100)
+        mutation_function = Randomizer.choice([self.mutate_node, self.mutate_connection, self.mutate_weight],
+                                              weights=[0.3, 0.3, 0.4])
 
-        if random_number < Genome.NODEMUTATIONPROBABILITY:
-            self.mutate_node()
-        elif random_number < Genome.CONNECTIONMUTATIONPROBABILITY:
-            self.mutate_connection()
-        else:
-            self.mutate_weight()
+        mutation_function()
+
+        # if random_number < Genome.NODEMUTATIONPROBABILITY:
+        #     self.mutate_node()
+        # elif random_number < Genome.CONNECTIONMUTATIONPROBABILITY:
+        #     self.mutate_connection()
+        # else:
+        #     self.mutate_weight()
 
         return self
 

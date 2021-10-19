@@ -59,5 +59,6 @@ if __name__ == "__main__":
         row=3, col=1
     )
     fig.update_layout(height=720, width=1080, title_text="Side By Side Subplots")
-    fig.show()
+    # fig.show()
+    fig.write_image("pid.png")
     

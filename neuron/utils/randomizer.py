@@ -43,11 +43,12 @@ class Randomizer:
         return random.randint(args[0], args[1])
 
     @staticmethod   
-    def choice(values:List[Any]):
+    def choice(values: list[Any], weights: list[int] = None):
         if len(values) == 0:
             return None
-        return random.choice(values)
-    
+        return random.choices(values, weights=weights, k=1)[0]
+
+
 
 if __name__ == '__main__':
     # Randomizer.seed(0)
