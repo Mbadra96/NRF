@@ -14,20 +14,20 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.bicopter2 import BiCopter
 
 
-class Scenario05:
+class Scenario06:
     """
-    Scenario 05:
+    Scenario 06:
                 Task : Bi-Copter
                 Encoder : Clamp
                 Decoder : Step-Forward
-                Case : Reference Tracking & Central Error
+                Case : Reference Tracking & Distributed Error
     """
     def __init__(self) -> None:
         # Set Random seed
         Randomizer.seed(0)
 
         # init NEAT
-        self.neat = Neat(2, 4)
+        self.neat = Neat(4, 4)
 
         # Generate Population
         self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
@@ -35,14 +35,16 @@ class Scenario05:
         # Print Start Message
         print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_05/scenario_05"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_06/scenario_06"
 
     @staticmethod
-    def fitness_function(genome: Genome, visualize:bool = False, fig: go.Figure = None, scenario: str = "") -> Union[float, go.Figure]:
+    def fitness_function(genome: Genome, visualize: bool = False, fig: go.Figure = None, scenario: str = "") -> Union[float, go.Figure]:
         output_decoder_threshold = 0.01
         output_base = 0.5
         decoder_1 = SFDecoder(output_base, output_decoder_threshold)
         decoder_2 = SFDecoder(output_base, output_decoder_threshold)
+        encoder1 = ClampEncoder()
+        encoder2 = ClampEncoder()
         cont = genome.build_phenotype(TIMESTEP)
         theta_ref = 0.0
         theta_dot_ref = 0.0
@@ -55,13 +57,14 @@ class Scenario05:
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-        encoder = ClampEncoder()
+
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) #+ Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e1 = (theta - theta_ref)
+            e2 = (theta_dot - theta_dot_ref) #+ Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((theta - theta_ref) / 10.0) + (abs(theta_dot - theta_dot_ref)/10.0)
             ###########################
-            out = cont.step(encoder.encode(e), t[i], TIMESTEP)
+            out = cont.step([*encoder1.encode(e1), *encoder2.encode(e2)], t[i], TIMESTEP)
             w1 = decoder_1.decode(out[0],out[1])  # Controller
             w2 = decoder_2.decode(out[2],out[3])  # Controller
             theta, theta_dot = copter.step(w1, w2, t[i], TIMESTEP)  # Model

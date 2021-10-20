@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import ClampEncoder, MWDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -14,12 +14,12 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.bicopter2 import BiCopter
 
 
-class Scenario05:
+class Scenario07:
     """
-    Scenario 05:
+    Scenario 07:
                 Task : Bi-Copter
                 Encoder : Clamp
-                Decoder : Step-Forward
+                Decoder : Moving Window
                 Case : Reference Tracking & Central Error
     """
     def __init__(self) -> None:
@@ -35,14 +35,14 @@ class Scenario05:
         # Print Start Message
         print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_05/scenario_05"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_07/scenario_07"
 
     @staticmethod
     def fitness_function(genome: Genome, visualize:bool = False, fig: go.Figure = None, scenario: str = "") -> Union[float, go.Figure]:
         output_decoder_threshold = 0.01
         output_base = 0.5
-        decoder_1 = SFDecoder(output_base, output_decoder_threshold)
-        decoder_2 = SFDecoder(output_base, output_decoder_threshold)
+        decoder_1 = MWDecoder(5, output_base, output_decoder_threshold)
+        decoder_2 = MWDecoder(5, output_base, output_decoder_threshold)
         cont = genome.build_phenotype(TIMESTEP)
         theta_ref = 0.0
         theta_dot_ref = 0.0
