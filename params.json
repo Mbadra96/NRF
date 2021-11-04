@@ -5,8 +5,8 @@
   "Ts": 0,
   "Csyn":2,
   "RP": 2.0,
-  "Evaluation_Time": 50,
+  "Evaluation_Time": 10,
   "Time_Step": 0.5,
-  "Generation":50,
-  "PopulationNumber":50
+  "Generation":100,
+  "PopulationNumber":100
 }

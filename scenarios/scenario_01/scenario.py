@@ -133,5 +133,5 @@ class Scenario01:
                                               disturbance_magnitude=disturbance_magnitude,
                                               scenario=self.__class__.__name__)
         fig.show()
-        fig.write_image(f"{self.file_name}.png") 
+        fig.write_image(f"{self.file_name}.png")
         genome.visualize(self.file_name)
