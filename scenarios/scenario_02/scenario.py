@@ -153,6 +153,7 @@ class Scenario02:
                               disturbance_magnitude=disturbance_magnitude,
                               scenario=self.__class__.__name__)
         plt.xlabel("t(s)")
+        plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
         genome.visualize(self.file_name)
 

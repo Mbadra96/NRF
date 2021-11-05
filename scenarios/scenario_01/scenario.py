@@ -4,7 +4,14 @@ import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt
-
+# import matplotlib
+# matplotlib.use("pgf")
+# matplotlib.rcParams.update({
+#     "pgf.texsystem": "pdflatex",
+#     'font.family': 'serif',
+#     'text.usetex': True,
+#     'pgf.rcfonts': False,
+# })
 
 from neuron.core.coder import ClampEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
@@ -147,6 +154,7 @@ class Scenario01:
         fig.write_image(f"{self.file_name}_convergence_curve.png")
 
     def visualize_and_save(self, ref: float = 1.0, mass: float = 1.0, disturbance_magnitude: float = 0.0):
+
         genome: Genome = Genome.load(self.file_name)
         fig = self.fitness_function(genome,
                                     ref=ref,
@@ -155,6 +163,7 @@ class Scenario01:
                                     disturbance_magnitude=disturbance_magnitude,
                                     scenario=self.__class__.__name__)
         plt.xlabel("t(s)")
+        plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
         # fig.write_image(f"{self.file_name}.png")
         # genome.visualize(self.file_name)
