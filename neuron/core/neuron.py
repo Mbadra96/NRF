@@ -94,14 +94,14 @@ class InputNeuron(Neuron):
         self.Isyn = 0
         self.refractory_counter = int(Neuron.RefractoryPeriod/dt)
 
-    def step(self, spike:bool, t, dt):
+    def step(self, I: float, t, dt):
         if self.refractory_counter <= 0:
             self.refractory_state = False 
 
         # update (v) based on input current and connected synapses
         if not self.refractory_state:
             # self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(self.Isyn)) # update (v) using Euler Method
-            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(InputNeuron.CSYN if spike else 0))
+            self.v += (dt/Neuron.Tn)*(-(self.v-Neuron.Vr) + Neuron.R*(InputNeuron.CSYN*I))
         
         # update spike trains
         if self.v >= 1.0:

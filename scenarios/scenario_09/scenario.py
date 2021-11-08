@@ -4,16 +4,8 @@ import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt
-# import matplotlib
-# matplotlib.use("pgf")
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     'font.family': 'serif',
-#     'text.usetex': True,
-#     'pgf.rcfonts': False,
-# })
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import LSEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -21,16 +13,16 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 
-class Scenario01:
+class Scenario09:
     """
-    Scenario 01:
+    Scenario 09:
                 Task : Ball Levitation
-                Encoder : Clamp
+                Encoder : Linear Saturation
                 Decoder : Step-Forward
                 Case : Reference Tracking & Central Error
     """
     def __init__(self) -> None:
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_09/scenario_09"
 
     @staticmethod
     def fitness_function(genome: Genome,
@@ -40,17 +32,16 @@ class Scenario01:
                          visualize: bool = False,
                          scenario: str = "") -> Union[float, None]:
 
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
-        encoder = ClampEncoder()
+        encoder = LSEncoder()
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-            # spike_trains = [[], [], [], []]
 
         x_ref = ref
         x_dot_ref = 0
@@ -72,16 +63,6 @@ class Scenario01:
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
-
-                # if sensors[0]:
-                #     spike_trains[0].append(t[i])
-                # if sensors[1]:
-                #     spike_trains[1].append(t[i])
-
-                # if action[0]:
-                #     spike_trains[2].append(t[i])
-                # if action[1]:
-                #     spike_trains[3].append(t[i])
 
                 if t_10 == 0 and x >= 0.1 * x_ref:
                     t_10 = t[i]
@@ -109,10 +90,6 @@ class Scenario01:
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
 
-            # ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
-            # ax[3].set_ylabel("Spike Train")
-            # ax[3].grid()
-            # ax[3].set_yticks(np.arange(0, 4, 1))
             if visualize:
                 print(f"Rise Time = {t_90-t_10}")
             return fig
@@ -170,5 +147,4 @@ class Scenario01:
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        # fig.write_image(f"{self.file_name}.png")
-        # genome.visualize(self.file_name)
+        genome.visualize(self.file_name)

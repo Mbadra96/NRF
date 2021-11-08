@@ -40,7 +40,7 @@ class Scenario01:
                          visualize: bool = False,
                          scenario: str = "") -> Union[float, None]:
 
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = ClampEncoder()
