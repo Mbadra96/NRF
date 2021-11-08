@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -31,9 +31,11 @@ class Scenario02:
                          disturbance_magnitude: float = 0.0,
                          visualize: bool = False,
                          scenario: str = "") -> Union[float, None]:
-        output_decoder_threshold = 1
+        output_decoder_threshold = 0.1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
+        encoder_1 = StepEncoder()
+        encoder_2 = StepEncoder()
         cont = genome.build_phenotype(TIMESTEP)
 
         if visualize:
@@ -42,15 +44,13 @@ class Scenario02:
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
             
-
         x_ref = ref
         x_dot_ref = 0
         total_error = 0.0
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-        encoder_1 = ClampEncoder()
-        encoder_2 = ClampEncoder()
+
         t_10 = 0
         t_90 = 0
         # Simulation Loop
@@ -66,16 +66,6 @@ class Scenario02:
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, (e1+e2), f
 
-                # if sensors[0]:
-                #     spike_trains[0].append(t[i])
-                # if sensors[1]:
-                #     spike_trains[1].append(t[i])
-
-                # if action[0]:
-                #     spike_trains[2].append(t[i])
-                # if action[1]:
-                #     spike_trains[3].append(t[i])
-
                 if t_10 == 0 and x >= 0.1 * x_ref:
                     t_10 = t[i]
 
@@ -87,7 +77,6 @@ class Scenario02:
 
             ax[0].plot(t, v1)
             ax[0].grid()
-            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
 
             ax[1].plot(t, v2)
@@ -102,10 +91,6 @@ class Scenario02:
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
 
-            # ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
-            # ax[3].set_ylabel("Spike Train")
-            # ax[3].grid()
-            # ax[3].set_yticks(np.arange(0, 4, 1))
             if visualize:
                 print(f"Rise Time = {t_90-t_10}")
             return fig

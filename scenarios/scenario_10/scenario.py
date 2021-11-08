@@ -22,16 +22,16 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 
 
-class Scenario01:
+class Scenario10:
     """
-    Scenario 01:
+    Scenario 10:
                 Task : Ball Levitation
                 Encoder : Clamp
                 Decoder : Step-Forward
-                Case : Reference Tracking & Central Error
+                Case : Sin Wave Tracking & Central Error
     """
     def __init__(self) -> None:
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_10/scenario_10"
 
     @staticmethod
     def fitness_function(genome: Genome,
@@ -52,18 +52,21 @@ class Scenario01:
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
             # spike_trains = [[], [], [], []]
+        around = 5
         x_ref = ref
         x_dot_ref = 0
         total_error = 0.0
-        x = 0
-        x_dot = 0
+        x = 5
+        x_dot = 0.5
         ball = LevitatingBall(mass, x, x_dot)
         t_10 = 0
         t_90 = 0
         # Simulation Loop
 
         for i in range(SAMPLES):
-            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            s = (sin(pi*t[i]/4) + around*2)/2
+            s_dot = (cos(pi * t[i] / 4)) / 2
+            e = (s - x) + (s_dot - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
             sensors = encoder.encode(e)
@@ -72,7 +75,7 @@ class Scenario01:
             x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
 
             if visualize:
-                v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
+                v1[i], v2[i], v3[i], v4[i] = (x,s), (x_dot,s_dot), e, f
                 if t_10 == 0 and x >= 0.1 * x_ref:
                     t_10 = t[i]
 
@@ -94,7 +97,7 @@ class Scenario01:
             ax[2].plot(t, v3)
             ax[2].grid()
             ax[2].set_ylabel("error")
-            # ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
+            ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
 
             ax[3].plot(t, v4)
             ax[3].grid()
@@ -156,7 +159,7 @@ class Scenario01:
                                     disturbance_magnitude=disturbance_magnitude,
                                     scenario=self.__class__.__name__)
         plt.xlabel("t(s)")
-        plt.savefig(f"{self.file_name}_ST.eps")
+        # plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
         # fig.write_image(f"{self.file_name}.png")
         # genome.visualize(self.file_name)

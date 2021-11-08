@@ -1,14 +1,8 @@
-from typing import Protocol, Tuple
+from typing import Tuple
 import numpy as np
 
-# Defining ENCODERS
-class Encoder(Protocol):
-    def encode(self, signal:float) -> Tuple[int, int]:
-        """ takes a signal and return a two encoded int spikes """
-class Decoder(Protocol):
-    def decode(self, spike_1: int, spike_2: int) -> float:
-        """ takes two spikes and returns a float decoded signal"""
-class ClampEncoder:
+
+class StepEncoder:
     def __init__(self) -> None:
         pass
 
@@ -19,6 +13,7 @@ class ClampEncoder:
             return 0, 1
         else:
             return 0, 0
+
 
 class LSEncoder:
     """ Linear Saturation Encoder implementation"""
@@ -36,6 +31,7 @@ class LSEncoder:
                 return 0, 1.0
             return 0, - signal
         return 0.0, 0.0
+
 
 class SFEncoder:
     def __init__(self, threshold) -> None:
@@ -58,6 +54,8 @@ class SFEncoder:
             return 0, 1
 
         return 0, 0
+
+
 class MWEncoder:
     def __init__(self, window: int, threshold):
         self.base = None
@@ -112,6 +110,8 @@ class MWDecoder:
 
         self.counter += 1
         return float(np.mean(self.window))
+
+
 class SFDecoder:
     def __init__(self, base, threshold) -> None:
         self.base = base

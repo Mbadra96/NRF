@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 #     'pgf.rcfonts': False,
 # })
 
-from neuron.core.coder import ClampEncoder, SFDecoder
+from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
@@ -43,7 +43,7 @@ class Scenario01:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
-        encoder = ClampEncoder()
+        encoder = StepEncoder()
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES
@@ -108,6 +108,7 @@ class Scenario01:
             ax[3].plot(t, v4)
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
+            ax[3].set_yticks(np.arange(5, 15, 1))
 
             # ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
             # ax[3].set_ylabel("Spike Train")
@@ -170,5 +171,5 @@ class Scenario01:
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        # fig.write_image(f"{self.file_name}.png")
+        fig.write_image(f"{self.file_name}.png")
         # genome.visualize(self.file_name)
