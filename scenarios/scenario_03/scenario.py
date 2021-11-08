@@ -3,7 +3,7 @@ from pathlib import Path # type: ignore
 import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 
 from neuron.core.coder import ClampEncoder, MWDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
@@ -33,14 +33,15 @@ class Scenario03:
                          scenario: str = "") -> Union[float, None]:
         output_decoder_threshold = 1
         output_base = 9.81
-        decoder = MWDecoder(10, output_base, output_decoder_threshold)
+        decoder = MWDecoder(5, output_base, output_decoder_threshold)
         encoder = ClampEncoder()
         cont = genome.build_phenotype(TIMESTEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
-            spike_trains = [[], [], [], []]
+            v4 = [0.0] * SAMPLES
+            
 
         x_ref = ref
         x_dot_ref = 0
@@ -61,18 +62,7 @@ class Scenario03:
             x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
 
             if visualize:
-                v1[i], v2[i] = x, e
-                v3[i] = f
-                if sensors[0]:
-                    spike_trains[0].append(t[i])
-                if sensors[1]:
-                    spike_trains[1].append(t[i])
-
-                if action[0]:
-                    spike_trains[2].append(t[i])
-                if action[1]:
-                    spike_trains[3].append(t[i])
-
+                v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
                 if t_10 == 0 and x >= 0.1 * x_ref:
                     t_10 = t[i]
 
@@ -84,23 +74,27 @@ class Scenario03:
 
             ax[0].plot(t, v1)
             ax[0].grid()
-            ax[0].set_title(scenario)
+            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
 
             ax[1].plot(t, v2)
             ax[1].grid()
-            ax[1].set_ylabel("error")
+            ax[1].set_ylabel("x dot (m/s)")
 
             ax[2].plot(t, v3)
             ax[2].grid()
-            ax[2].set_ylabel("force(N)")
+            ax[2].set_ylabel("error")
 
-            ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
-            ax[3].set_ylabel("Spike Train")
+            ax[3].plot(t, v4)
             ax[3].grid()
-            ax[3].set_yticks(np.arange(0, 4, 1))
+            ax[3].set_ylabel("force(N)")
+
+            # ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
+            # ax[3].set_ylabel("Spike Train")
+            # ax[3].grid()
+            # ax[3].set_yticks(np.arange(0, 4, 1))
             if visualize:
-                print(f"Rise Time = {t_90 - t_10}")
+                print(f"Rise Time = {t_90-t_10}")
             return fig
         if x == 0.0 and x_dot == 0.0:
             return 10000
@@ -149,5 +143,8 @@ class Scenario03:
                               mass=mass,
                               disturbance_magnitude=disturbance_magnitude,
                               scenario=self.__class__.__name__)
+        plt.xlabel("t(s)")
+        plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        genome.visualize(self.file_name)
+        # fig.write_image(f"{self.file_name}.png")
+        # genome.visualize(self.file_name)
