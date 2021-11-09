@@ -1,64 +1,87 @@
 from typing import Union
 from pathlib import Path # type: ignore
 import numpy as np
-from math import inf
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt
+from math import  sin, cos,pi
+# import matplotlib
+# matplotlib.use("pgf")
+# matplotlib.rcParams.update({
+#     "pgf.texsystem": "pdflatex",
+#     'font.family': 'serif',
+#     'text.usetex': True,
+#     'pgf.rcfonts': False,
+# })
 
 from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
-from neuron.simulation.bicopter2 import BiCopter
+from neuron.simulation.levitating_ball import LevitatingBall
 
 
-class Scenario05:
+class Scenario11:
     """
-    Scenario 05:
-                Task : Bi-Copter
+    Scenario 11:
+                Task : Ball Levitation
                 Encoder : Step
                 Decoder : Step-Forward
                 Case : Reference Tracking & Central Error
     """
     def __init__(self) -> None:
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_05/scenario_05"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_11/scenario_11"
 
     @staticmethod
     def fitness_function(genome: Genome,
-                         visualize: bool = False,
+                         ref: float = 1.0,
+                         mass: float = 1.0,
                          disturbance_magnitude: float = 0.0,
-                         scenario: str = "") -> Union[float, go.Figure]:
-        output_decoder_threshold = 0.01
-        output_base = 0.5
-        decoder_1 = SFDecoder(output_base, output_decoder_threshold)
-        decoder_2 = SFDecoder(output_base, output_decoder_threshold)
+                         visualize: bool = False,
+                         scenario: str = "") -> Union[float, None]:
+
+        output_decoder_threshold = 0.1
+        output_base = 9.81
+        decoder = SFDecoder(output_base, output_decoder_threshold)
+        encoder = StepEncoder()
         cont = genome.build_phenotype(TIMESTEP)
-        theta_ref = 0.0
-        theta_dot_ref = 0.0
-        total_error = 0.0
-        theta = 1.0
-        theta_dot = 0.0
-        copter = BiCopter(theta=theta)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-        encoder = StepEncoder()
+            # spike_trains = [[], [], [], []]
+        x_ref = ref
+        x_dot_ref = 0
+        total_error = 0.0
+        x = 0
+        x_dot = 0
+        ball = LevitatingBall(mass, x, x_dot)
+        t_10 = 0
+        t_90 = 0
         # Simulation Loop
+        IAE = 0
+        ISE = 0
+        ITAE = 0
         for i in range(SAMPLES):
-            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            ###########################
-            out = cont.step(encoder.encode(e), t[i], TIMESTEP)
-            w1 = decoder_1.decode(out[0], out[1])  # Controller
-            w2 = decoder_2.decode(out[2], out[3])  # Controller
-            total_error += abs((theta - theta_ref) / 10.0) + (abs(theta_dot - theta_dot_ref)/10.0) + abs(w1) + abs(w2)
-            theta, theta_dot = copter.step(w1, w2, t[i], TIMESTEP)  # Model
+            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            IAE += abs(e)
+            ISE += e**2
+            ITAE += t[i]*abs(e)
+            ######################
+            sensors = encoder.encode(e)
+            action = cont.step(sensors, t[i], TIMESTEP)
+            f = decoder.decode(*action)  # Controller
+            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
 
             if visualize:
-                v1[i], v2[i], v3[i], v4[i] = theta, theta_dot, e, (w1, w2)
+                v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
+                if t_10 == 0 and x >= 0.1 * x_ref:
+                    t_10 = t[i]
+
+                if t_90 == 0 and x >= 0.9 * x_ref:
+                    t_90 = t[i]
 
         if visualize:
             fig, ax = plt.subplots(4, 1, sharex='all')
@@ -66,11 +89,11 @@ class Scenario05:
             ax[0].plot(t, v1)
             ax[0].grid()
             # ax[0].set_title(scenario)
-            ax[0].set_ylabel("theta")
+            ax[0].set_ylabel("x(m)")
 
             ax[1].plot(t, v2)
             ax[1].grid()
-            ax[1].set_ylabel("theta dot (m/s)")
+            ax[1].set_ylabel("x dot (m/s)")
 
             ax[2].plot(t, v3)
             ax[2].grid()
@@ -79,19 +102,23 @@ class Scenario05:
 
             ax[3].plot(t, v4)
             ax[3].grid()
-            ax[3].set_ylabel("W1 & W2")
-            # ax[3].set_yticks(np.arange(7, 14, 1))
+            ax[3].set_ylabel("force(N)")
+            ax[3].set_yticks(np.arange(7, 14, 1))
 
-        if theta == 0 and theta_dot == 0:
-            return inf
-        return total_error/SAMPLES
+            if visualize:
+                print(f"Rise Time = {t_90-t_10}")
+            return fig
+        if x == 0.0 and x_dot == 0.0:
+            return 10000
+
+        return 0.4 * IAE + 0.2 * ISE + 0.4 * ITAE
 
     def run(self) -> None:
         # Set Random seed
         Randomizer.seed(0)
 
         # init NEAT
-        self.neat = Neat(2, 4)
+        self.neat = Neat(2, 2)
 
         # Generate Population
         self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
@@ -114,7 +141,7 @@ class Scenario05:
 
         print("-------------------------------------")
         print(f"No OF Species = {self.population.get_species_size()}")
-        fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence)+1, 1), y=convergence))
+        fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence)+1, 1),y=convergence))
         fig.update_layout(height=720, width=1080, title_text=f"{self.__class__.__name__} Convergence")
         fig.update_xaxes(dtick=1)
         fig['layout']['yaxis']['title'] = 'fitness'
@@ -123,11 +150,15 @@ class Scenario05:
         fig.show()
         fig.write_image(f"{self.file_name}_convergence_curve.png")
 
-    def visualize_and_save(self):
-        genome: Genome = Genome.load(self.file_name)
-        self.fitness_function(genome, visualize=True, scenario=self.__class__.__name__)
+    def visualize_and_save(self, ref: float = 1.0, mass: float = 1.0, disturbance_magnitude: float = 0.0):
 
+        genome: Genome = Genome.load(self.file_name)
+        fig = self.fitness_function(genome,
+                                    ref=ref,
+                                    visualize=True,
+                                    mass=mass,
+                                    disturbance_magnitude=disturbance_magnitude,
+                                    scenario=self.__class__.__name__)
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        genome.visualize(self.file_name)

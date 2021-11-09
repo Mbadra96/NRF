@@ -1,7 +1,7 @@
-from scenarios.scenario_02.scenario import Scenario02
+from scenarios.scenario_01.scenario import Scenario01
 
 if __name__ == "__main__":
-    scenario = Scenario02()
+    scenario = Scenario01()
     try:
         scenario.run()
     except KeyboardInterrupt:

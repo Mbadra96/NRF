@@ -8,5 +8,9 @@
   "Evaluation_Time": 10,
   "Time_Step": 0.5,
   "Generation":100,
-  "PopulationNumber":100
+  "PopulationNumber":100,
+  "Species_threshold": 1,
+  "Species_elimination_rate": 0.7,
+  "Population_crossover_rate": 1,
+  "Population_mutation_rate": 0
 }

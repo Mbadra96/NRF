@@ -158,5 +158,3 @@ class Scenario01:
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        # fig.write_image(f"{self.file_name}.png")
-        # genome.visualize(self.file_name)
