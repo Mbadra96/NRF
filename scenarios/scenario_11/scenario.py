@@ -109,7 +109,7 @@ class Scenario11:
                 print(f"Rise Time = {t_90-t_10}")
             return fig
         if x == 0.0 and x_dot == 0.0:
-            return 10000
+            return np.Inf
 
         return 0.4 * IAE + 0.2 * ISE + 0.4 * ITAE
 
