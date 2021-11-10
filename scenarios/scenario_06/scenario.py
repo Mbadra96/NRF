@@ -2,19 +2,20 @@ from typing import Union
 from pathlib import Path # type: ignore
 import numpy as np
 from math import inf
-from plotly.subplots import make_subplots # type: ignore
-import plotly.graph_objects as go # type: ignore
+from plotly.subplots import make_subplots  # type: ignore
+import plotly.graph_objects as go  # type: ignore
 
 
-from neuron.core.coder import ClampEncoder, SFDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.coder import StepEncoder, SFDecoder
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.bicopter2 import BiCopter
+from scenarios.core import SuperScenario
 
 
-class Scenario06:
+class Scenario(SuperScenario):
     """
     Scenario 06:
                 Task : Bi-Copter
@@ -23,29 +24,18 @@ class Scenario06:
                 Case : Reference Tracking & Distributed Error
     """
     def __init__(self) -> None:
-        # Set Random seed
-        Randomizer.seed(0)
-
-        # init NEAT
-        self.neat = Neat(4, 4)
-
-        # Generate Population
-        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
-
-        # Print Start Message
-        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
 
         self.file_name = f"{Path().absolute()}/scenarios/scenario_06/scenario_06"
 
     @staticmethod
-    def fitness_function(genome: Genome, visualize: bool = False, fig: go.Figure = None, scenario: str = "") -> Union[float, go.Figure]:
+    def fitness_function(genome: Genome, visualize: bool = False, fig: go.Figure = None) -> Union[float, go.Figure]:
         output_decoder_threshold = 0.01
         output_base = 0.5
         decoder_1 = SFDecoder(output_base, output_decoder_threshold)
         decoder_2 = SFDecoder(output_base, output_decoder_threshold)
-        encoder1 = ClampEncoder()
-        encoder2 = ClampEncoder()
-        cont = genome.build_phenotype(TIMESTEP)
+        encoder1 = StepEncoder()
+        encoder2 = StepEncoder()
+        cont = genome.build_phenotype(TIME_STEP)
         theta_ref = 0.0
         theta_dot_ref = 0.0
         total_error = 0.0
@@ -64,10 +54,10 @@ class Scenario06:
             e2 = (theta_dot - theta_dot_ref) #+ Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs((theta - theta_ref) / 10.0) + (abs(theta_dot - theta_dot_ref)/10.0)
             ###########################
-            out = cont.step([*encoder1.encode(e1), *encoder2.encode(e2)], t[i], TIMESTEP)
+            out = cont.step([*encoder1.encode(e1), *encoder2.encode(e2)], t[i], TIME_STEP)
             w1 = decoder_1.decode(out[0],out[1])  # Controller
             w2 = decoder_2.decode(out[2],out[3])  # Controller
-            theta, theta_dot = copter.step(w1, w2, t[i], TIMESTEP)  # Model
+            theta, theta_dot = copter.step(w1, w2, t[i], TIME_STEP)  # Model
 
             if visualize:
                 v1[i], v2[i] = theta, theta_dot
@@ -104,7 +94,18 @@ class Scenario06:
         return total_error
 
     def run(self) -> None:
-        
+        # Set Random seed
+        Randomizer.seed(0)
+
+        # init NEAT
+        self.neat = Neat(4, 4)
+
+        # Generate Population
+        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
+
+        # Print Start Message
+        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
+
         convergence: list[float] = []
 
         for i in range(GENERATIONS):
@@ -131,7 +132,7 @@ class Scenario06:
 
     def visualize_and_save(self):
         genome: Genome = Genome.load(self.file_name)
-        fig: go.Figure = self.fitness_function(genome, visualize=True, scenario=self.__class__.__name__)
+        fig: go.Figure = self.fitness_function(genome, visualize=True)
         fig.show()
         fig.write_image(f"{self.file_name}.png") 
         genome.visualize(self.file_name)

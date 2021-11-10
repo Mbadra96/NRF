@@ -6,14 +6,15 @@ import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt
 
 from neuron.core.coder import LSEncoder, SFDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
+from scenarios.core import SuperScenario
 
 
-class Scenario09:
+class Scenario(SuperScenario):
     """
     Scenario 09:
                 Task : Ball Levitation
@@ -29,14 +30,13 @@ class Scenario09:
                          ref: float = 1.0,
                          mass: float = 1.0,
                          disturbance_magnitude: float = 0.0,
-                         visualize: bool = False,
-                         scenario: str = "") -> Union[float, None]:
+                         visualize: bool = False) -> Union[float, None]:
 
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = LSEncoder()
-        cont = genome.build_phenotype(TIMESTEP)
+        cont = genome.build_phenotype(TIME_STEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
@@ -57,9 +57,9 @@ class Scenario09:
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
             sensors = encoder.encode(e)
-            action = cont.step(sensors, t[i], TIMESTEP)
+            action = cont.step(sensors, t[i], TIME_STEP)
             f = decoder.decode(*action)  # Controller
-            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
+            x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
@@ -75,7 +75,6 @@ class Scenario09:
 
             ax[0].plot(t, v1)
             ax[0].grid()
-            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
 
             ax[1].plot(t, v2)
@@ -142,8 +141,7 @@ class Scenario09:
                                     ref=ref,
                                     visualize=True,
                                     mass=mass,
-                                    disturbance_magnitude=disturbance_magnitude,
-                                    scenario=self.__class__.__name__)
+                                    disturbance_magnitude=disturbance_magnitude)
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()

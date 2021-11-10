@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # })
 
 from neuron.core.coder import StepEncoder, SFDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
@@ -44,7 +44,7 @@ class Scenario01:
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = StepEncoder()
-        cont = genome.build_phenotype(TIMESTEP)
+        cont = genome.build_phenotype(TIME_STEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
@@ -66,9 +66,9 @@ class Scenario01:
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
             sensors = encoder.encode(e)
-            action = cont.step(sensors, t[i], TIMESTEP)
+            action = cont.step(sensors, t[i], TIME_STEP)
             f = decoder.decode(*action)  # Controller
-            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
+            x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f

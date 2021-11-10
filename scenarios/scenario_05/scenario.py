@@ -7,14 +7,15 @@ import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt
 
 from neuron.core.coder import StepEncoder, SFDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.bicopter2 import BiCopter
+from scenarios.core import SuperScenario
 
 
-class Scenario05:
+class Scenario(SuperScenario):
     """
     Scenario 05:
                 Task : Bi-Copter
@@ -28,13 +29,12 @@ class Scenario05:
     @staticmethod
     def fitness_function(genome: Genome,
                          visualize: bool = False,
-                         disturbance_magnitude: float = 0.0,
-                         scenario: str = "") -> Union[float, go.Figure]:
+                         disturbance_magnitude: float = 0.0) -> Union[float, go.Figure]:
         output_decoder_threshold = 0.01
         output_base = 0.5
         decoder_1 = SFDecoder(output_base, output_decoder_threshold)
         decoder_2 = SFDecoder(output_base, output_decoder_threshold)
-        cont = genome.build_phenotype(TIMESTEP)
+        cont = genome.build_phenotype(TIME_STEP)
         theta_ref = 0.0
         theta_dot_ref = 0.0
         total_error = 0.0
@@ -51,11 +51,11 @@ class Scenario05:
         for i in range(SAMPLES):
             e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             ###########################
-            out = cont.step(encoder.encode(e), t[i], TIMESTEP)
+            out = cont.step(encoder.encode(e), t[i], TIME_STEP)
             w1 = decoder_1.decode(out[0], out[1])  # Controller
             w2 = decoder_2.decode(out[2], out[3])  # Controller
             total_error += abs((theta - theta_ref) / 10.0) + (abs(theta_dot - theta_dot_ref)/10.0) + abs(w1) + abs(w2)
-            theta, theta_dot = copter.step(w1, w2, t[i], TIMESTEP)  # Model
+            theta, theta_dot = copter.step(w1, w2, t[i], TIME_STEP)  # Model
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = theta, theta_dot, e, (w1, w2)
@@ -125,7 +125,7 @@ class Scenario05:
 
     def visualize_and_save(self):
         genome: Genome = Genome.load(self.file_name)
-        self.fitness_function(genome, visualize=True, scenario=self.__class__.__name__)
+        self.fitness_function(genome, visualize=True)
 
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")

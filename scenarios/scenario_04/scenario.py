@@ -1,46 +1,42 @@
 from typing import Union
-from pathlib import Path # type: ignore
+from pathlib import Path  # type: ignore
 import numpy as np
 from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 
-from neuron.core.coder import ClampEncoder, MWDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.coder import StepEncoder, MWDecoder
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
+from scenarios.core import SuperScenario
 
 
-class Scenario04:
+class Scenario(SuperScenario):
     """
     Scenario 04:
-                Task : Ball Leviation
-                Encoder : Clamp
+                Task : Ball Levitation
+                Encoder : Step
                 Decoder : Moving-Window
                 Case : Reference Tracking & distributed Error
     """
     def __init__(self) -> None:
-        # Set Random seed
-        Randomizer.seed(0)
 
-        # init NEAT
-        self.neat = Neat(4, 2)
-
-        # Generate Population
-        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
 
         self.file_name = f"{Path().absolute()}/scenarios/scenario_04/scenario_04"
-        # Print Start Message
-        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
+
 
     @staticmethod
-    def fitness_function(genome: Genome, ref:float = 1.0 ,mass: float = 1.0, disturbance_magnitude: float = 0.0,
-                        visualize:bool = False, fig: go.Figure = None,scenario: str = "") -> Union[float, go.Figure]:
+    def fitness_function(genome: Genome,
+                         ref: float = 1.0,
+                         mass: float = 1.0,
+                         disturbance_magnitude: float = 0.0,
+                         visualize: bool = False) -> Union[float, go.Figure]:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = MWDecoder(10, output_base, output_decoder_threshold)
-        cont = genome.build_phenotype(TIMESTEP)
+        cont = genome.build_phenotype(TIME_STEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
@@ -52,8 +48,8 @@ class Scenario04:
         x = 0
         x_dot = 0
         ball = LevitatingBall(mass, x, x_dot)
-        encoder_1 = ClampEncoder()
-        encoder_2 = ClampEncoder()
+        encoder_1 = StepEncoder()
+        encoder_2 = StepEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
             e1 = (x_ref - x) 
@@ -61,8 +57,8 @@ class Scenario04:
             total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
             ######################
             e = [*encoder_1.encode(e1),*encoder_2.encode(e2)]
-            f = decoder.decode(*cont.step(e, t[i], TIMESTEP))  # Controller
-            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
+            f = decoder.decode(*cont.step(e, t[i], TIME_STEP))  # Controller
+            x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
             if visualize:
                 v1[i], v2[i] = x, x_dot
                 v3[i] = f
@@ -99,8 +95,19 @@ class Scenario04:
 
 
     def run(self) -> None:
-        
-        convergence:list[float] = []
+        # Set Random seed
+        Randomizer.seed(0)
+
+        # init NEAT
+        self.neat = Neat(4, 2)
+
+        # Generate Population
+        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
+
+        # Print Start Message
+        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
+
+        convergence: list[float] = []
 
         for i in range(GENERATIONS):
 
@@ -129,8 +136,7 @@ class Scenario04:
                                               ref=ref,
                                               visualize=True,
                                               mass=mass,
-                                              disturbance_magnitude=disturbance_magnitude,
-                                              scenario=self.__class__.__name__)
+                                              disturbance_magnitude=disturbance_magnitude)
         fig.show()
         fig.write_image(f"{self.file_name}.png")
         genome.visualize(self.file_name)

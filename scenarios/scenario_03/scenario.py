@@ -5,19 +5,20 @@ from plotly.subplots import make_subplots # type: ignore
 import plotly.graph_objects as go # type: ignore
 import matplotlib.pyplot as plt # type: ignore
 
-from neuron.core.coder import ClampEncoder, MWDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIMESTEP, SAMPLES, t
+from neuron.core.coder import StepEncoder, MWDecoder
+from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
+from scenarios.core import SuperScenario
 
 
-class Scenario03:
+class Scenario(SuperScenario):
     """
     Scenario 03:
                 Task : Ball Levitation
-                Encoder : Clamp
+                Encoder : Step
                 Decoder : Moving-Window
                 Case : Reference Tracking & Central Error
     """
@@ -29,19 +30,17 @@ class Scenario03:
                          ref: float = 1.0,
                          mass: float = 1.0,
                          disturbance_magnitude: float = 0.0,
-                         visualize:bool = False,
-                         scenario: str = "") -> Union[float, None]:
+                         visualize: bool = False) -> Union[float, None]:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = MWDecoder(5, output_base, output_decoder_threshold)
-        encoder = ClampEncoder()
-        cont = genome.build_phenotype(TIMESTEP)
+        encoder = StepEncoder()
+        cont = genome.build_phenotype(TIME_STEP)
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-            
 
         x_ref = ref
         x_dot_ref = 0
@@ -57,9 +56,9 @@ class Scenario03:
             total_error += abs((x_ref - x) / 10.0) + abs(x_dot_ref - x_dot) / 10
             ######################
             sensors = encoder.encode(e)
-            action = cont.step(sensors, t[i], TIMESTEP)
+            action = cont.step(sensors, t[i], TIME_STEP)
             f = decoder.decode(*action)  # Controller
-            x, x_dot = ball.step(f, t[i], TIMESTEP)  # Model
+            x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
@@ -74,7 +73,6 @@ class Scenario03:
 
             ax[0].plot(t, v1)
             ax[0].grid()
-            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
 
             ax[1].plot(t, v2)
@@ -89,10 +87,6 @@ class Scenario03:
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
 
-            # ax[3].eventplot(spike_trains, color=[0, 0, 0], linelengths=0.4)
-            # ax[3].set_ylabel("Spike Train")
-            # ax[3].grid()
-            # ax[3].set_yticks(np.arange(0, 4, 1))
             if visualize:
                 print(f"Rise Time = {t_90-t_10}")
             return fig
@@ -141,10 +135,8 @@ class Scenario03:
                               ref=ref,
                               visualize=True,
                               mass=mass,
-                              disturbance_magnitude=disturbance_magnitude,
-                              scenario=self.__class__.__name__)
+                              disturbance_magnitude=disturbance_magnitude)
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.show()
-        # fig.write_image(f"{self.file_name}.png")
         # genome.visualize(self.file_name)
