@@ -81,10 +81,12 @@ class Scenario(SuperScenario):
             ax[0].plot(t, v1)
             ax[0].grid()
             ax[0].set_ylabel("x(m)")
+            ax[0].legend(["x", "x_r"], loc="lower right")
 
             ax[1].plot(t, v2)
             ax[1].grid()
             ax[1].set_ylabel("x dot (m/s)")
+            ax[1].legend(["x_dot", "x_dot_r"], loc="lower right")
 
             ax[2].plot(t, v3)
             ax[2].grid()
@@ -95,6 +97,7 @@ class Scenario(SuperScenario):
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
             ax[3].set_yticks(np.arange(7, 14, 1))
+
 
             if visualize:
                 print(f"Rise Time = {t_90-t_10}")
@@ -145,7 +148,7 @@ class Scenario(SuperScenario):
     def visualize_and_save(self, ref: float = 1.0, mass: float = 1.0, disturbance_magnitude: float = 0.0):
 
         genome: Genome = Genome.load(self.file_name)
-        fig = self.fitness_function(genome,
+        self.fitness_function(genome,
                                     ref=ref,
                                     visualize=True,
                                     mass=mass,
