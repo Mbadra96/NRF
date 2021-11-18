@@ -1,10 +1,10 @@
 from typing import Union
 from pathlib import Path  # type: ignore
 import numpy as np
+from math import  sin, cos , pi
 from plotly.subplots import make_subplots  # type: ignore
 import plotly.graph_objects as go  # type: ignore
 import matplotlib.pyplot as plt
-
 
 from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
@@ -13,18 +13,20 @@ from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 from scenarios.core import SuperScenario
+from testing.model_ref_design import reference_model, reference_model_dot
 
 
 class Scenario(SuperScenario):
     """
-    Scenario 01:
+    Scenario 12:
                 Task : Ball Levitation
                 Encoder : Clamp
                 Decoder : Step-Forward
-                Case : Reference Tracking & Central Error
+                Case : Model Ref. Tracking & Central Error  & Sin Wave
     """
+
     def __init__(self) -> None:
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_01/scenario_01"
+        self.file_name = f"{Path().absolute()}/scenarios/scenario_12/scenario_12"
 
     @staticmethod
     def fitness_function(genome: Genome,
@@ -44,19 +46,24 @@ class Scenario(SuperScenario):
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
             # spike_trains = [[], [], [], []]
+        around = 5
         x_ref = ref
         x_dot_ref = 0
         total_error = 0.0
-        x = 0
-        x_dot = 0
+        x = 5
+        x_dot = 0.5
         ball = LevitatingBall(mass, x, x_dot)
         t_10 = 0
         t_90 = 0
         # Simulation Loop
 
         for i in range(SAMPLES):
-            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            total_error += abs((x_ref - x)/10.0) + abs(x_dot_ref - x_dot)/10
+            s = (sin(pi * t[i] / 4) + around * 2) / 2
+            s_dot = (cos(pi * t[i] / 4)) / 2
+            e = (s - x) + (s_dot - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            if -0.001 < e < 0.001:
+                e = 0
+            total_error += abs(e)  # absolute error
             ######################
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
@@ -64,7 +71,7 @@ class Scenario(SuperScenario):
             x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
 
             if visualize:
-                v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f
+                v1[i], v2[i], v3[i], v4[i] = (x, s), (x_dot, s_dot), e, f
                 if t_10 == 0 and x >= 0.1 * x_ref:
                     t_10 = t[i]
 
@@ -76,17 +83,18 @@ class Scenario(SuperScenario):
 
             ax[0].plot(t, v1)
             ax[0].grid()
-            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
+            ax[0].legend(["x", "x_r"], loc="lower right")
 
             ax[1].plot(t, v2)
             ax[1].grid()
             ax[1].set_ylabel("x dot (m/s)")
+            ax[1].legend(["x_dot", "x_dot_r"], loc="lower right")
 
             ax[2].plot(t, v3)
             ax[2].grid()
             ax[2].set_ylabel("error")
-            # ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
+            ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
 
             ax[3].plot(t, v4)
             ax[3].grid()
@@ -94,12 +102,13 @@ class Scenario(SuperScenario):
             ax[3].set_yticks(np.arange(7, 14, 1))
 
             if visualize:
-                print(f"Rise Time = {t_90-t_10}")
+                print(f"Rise Time = {t_90 - t_10}")
             return fig
-        if x == 0.0 and x_dot == 0.0:
-            return 10000
 
-        return total_error
+        if x == 0.0 and x_dot == 0.0:
+            return np.Inf
+
+        return total_error/SAMPLES
 
     def run(self) -> None:
         # Set Random seed
@@ -117,19 +126,18 @@ class Scenario(SuperScenario):
         convergence: list[float] = []
 
         for i in range(GENERATIONS):
-
             # update population
             self.population.update(i == GENERATIONS, save_file_name=self.file_name)
             convergence.append(self.population.best_fitness)
             # print updates
-            s = f"----- Generation {i+1} -----\n"
-            s += f"Generation {i+1} Best = {self.population.best_fitness}\n"
-            s += f"Generation {i+1} Worst = {self.population.worst_fitness}\n"
+            s = f"----- Generation {i + 1} -----\n"
+            s += f"Generation {i + 1} Best = {self.population.best_fitness}\n"
+            s += f"Generation {i + 1} Worst = {self.population.worst_fitness}\n"
             print(s)
 
         print("-------------------------------------")
         print(f"No OF Species = {self.population.get_species_size()}")
-        fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence)+1, 1),y=convergence))
+        fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence) + 1, 1), y=convergence))
         fig.update_layout(height=720, width=1080, title_text=f"{self.__class__.__name__} Convergence")
         fig.update_xaxes(dtick=1)
         fig['layout']['yaxis']['title'] = 'fitness'
@@ -141,12 +149,14 @@ class Scenario(SuperScenario):
     def visualize_and_save(self, ref: float = 1.0, mass: float = 1.0, disturbance_magnitude: float = 0.0):
 
         genome: Genome = Genome.load(self.file_name)
-        fig = self.fitness_function(genome,
-                                    ref=ref,
-                                    visualize=True,
-                                    mass=mass,
-                                    disturbance_magnitude=disturbance_magnitude)
+        self.fitness_function(genome,
+                              ref=ref,
+                              visualize=True,
+                              mass=mass,
+                              disturbance_magnitude=disturbance_magnitude)
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.savefig(f"{self.file_name}_ST.png")
         plt.show()
+
+        # genome.visualize(self.file_name)

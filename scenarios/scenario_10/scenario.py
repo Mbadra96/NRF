@@ -155,6 +155,7 @@ class Scenario(SuperScenario):
                                     disturbance_magnitude=disturbance_magnitude)
         plt.xlabel("t(s)")
         plt.savefig(f"{self.file_name}_ST.eps")
+        plt.savefig(f"{self.file_name}_ST.png")
         plt.show()
 
         # genome.visualize(self.file_name)

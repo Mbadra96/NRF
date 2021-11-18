@@ -97,7 +97,7 @@ class Scenario(SuperScenario):
             ax[3].plot(t, v4)
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
-            ax[3].set_yticks(np.arange(7, 14, 1))
+            ax[3].set_yticks(np.arange(7, 21, 3))
 
             if visualize:
                 print(f"Rise Time = {t_90 - t_10}")
