@@ -26,5 +26,7 @@ POPULATION_MUTATION_RATE = params["Population_mutation_rate"]
 
 # --------------- Neuron Dynamics----------------
 
-REFRACTORY_PERIOD:float = params['RP'] * ms
-TN:float = params['Tn'] * ms
+REFRACTORY_PERIOD: float = params['RP'] * ms
+TN: float = params['Tn'] * ms
+C_SYN: float = params['Csyn']
+R: float = params['R']

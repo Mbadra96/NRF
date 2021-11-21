@@ -6,7 +6,7 @@ class NeuroController:
     def __init__(self, connection, inputs, outputs, dt) -> None:
         
         # Create Neurons
-        self.neurons:list[Neuron] = []
+        self.neurons: list[Neuron] = []
         for i in range(len(connection)):
             if i in inputs:
                 self.neurons.append(InputNeuron(dt))
