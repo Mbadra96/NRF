@@ -2,7 +2,7 @@ from neuron.optimizer.neat.node_gene import NodeType
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.gene_set import GeneSet
 from neuron.optimizer.neat.history_marking import HistoryMarking
-from neuron.core.neuro_controller_2 import NeuroController
+from neuron.core.neuro_controller import NeuroController
 from multipledispatch import dispatch  # type: ignore
 import pickle
 from pyvis.network import Network  # type: ignore

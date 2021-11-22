@@ -33,9 +33,6 @@ class Neuron:
             self.refractory_state = True
             self.refractory_counter = int(REFRACTORY_PERIOD / dt) - 1
             self.v = 0
-        elif self.v < 0:
-            self.v = 0
-            self.s = False
         else:
             self.s = False
 
@@ -71,9 +68,6 @@ class OutputNeuron(Neuron):
             self.refractory_state = True
             self.refractory_counter = int(REFRACTORY_PERIOD / dt) - 1
             self.v = 0
-        elif self.v < 0:
-            self.v = 0
-            self.s = False
         else:
             self.s = False
 
@@ -106,9 +100,6 @@ class InputNeuron(Neuron):
             self.refractory_state = True
             self.refractory_counter = int(REFRACTORY_PERIOD / dt) - 1
             self.v = 0
-        elif self.v < 0:
-            self.v = 0
-            self.s = False
         else:
             self.s = False
 

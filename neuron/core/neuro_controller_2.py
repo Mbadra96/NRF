@@ -39,7 +39,6 @@ class NeuroController:
         self.refractory_counter[self.refractory_counter > 0] -= 1
         self.refractory_counter = np.where(self.v >= 1, self.refractory_counter_reset, self.refractory_counter)
 
-        self.v[self.v < 0] = 0
         self.v[self.v > 1] = 0
 
         return (self.output_matrix @ self.s).reshape([self.output_size, ]).tolist()

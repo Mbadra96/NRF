@@ -13,6 +13,7 @@ from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 from scenarios.core import SuperScenario
+from testing.model_ref_design import reference_model, reference_model_dot
 
 
 class Scenario(SuperScenario):
@@ -33,7 +34,7 @@ class Scenario(SuperScenario):
                          disturbance_magnitude: float = 0.0,
                          visualize: bool = False) -> Union[float, None]:
 
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = StepEncoder()
@@ -56,7 +57,7 @@ class Scenario(SuperScenario):
 
         for i in range(SAMPLES):
             e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            total_error += abs(e)
+            total_error += abs(x_ref - x) + abs(x_dot_ref - x_dot)
             ######################
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
@@ -97,8 +98,9 @@ class Scenario(SuperScenario):
                 print(f"Rise Time = {t_90-t_10}")
             return fig
 
+        # # Added Penalty of not moving
         if x == 0.0 and x_dot == 0.0:
-            return np.inf
+            return 10
 
         return total_error/SAMPLES
 
@@ -151,4 +153,3 @@ class Scenario(SuperScenario):
         plt.savefig(f"{self.file_name}_ST.eps")
         plt.savefig(f"{self.file_name}_ST.png")
         plt.show()
-        genome.visualize("best")
