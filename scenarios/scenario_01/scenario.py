@@ -5,7 +5,6 @@ from plotly.subplots import make_subplots  # type: ignore
 import plotly.graph_objects as go  # type: ignore
 import matplotlib.pyplot as plt
 
-
 from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
@@ -13,7 +12,6 @@ from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
 from neuron.simulation.levitating_ball import LevitatingBall
 from scenarios.core import SuperScenario
-from testing.model_ref_design import reference_model, reference_model_dot
 
 
 class Scenario(SuperScenario):
@@ -32,7 +30,7 @@ class Scenario(SuperScenario):
                          ref: float = 1.0,
                          mass: float = 1.0,
                          disturbance_magnitude: float = 0.0,
-                         visualize: bool = False) -> Union[float, None]:
+                         visualize: bool = False, fig=None, ax=None) -> Union[float, None]:
 
         output_decoder_threshold = 1
         output_base = 9.81
@@ -44,7 +42,7 @@ class Scenario(SuperScenario):
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-            # spike_trains = [[], [], [], []]
+
         x_ref = ref
         x_dot_ref = 0
         total_error = 0.0
@@ -73,30 +71,35 @@ class Scenario(SuperScenario):
                     t_90 = t[i]
 
         if visualize:
-            fig, ax = plt.subplots(4, 1, sharex='all')
+            if not fig and not ax:
+                fig, ax = plt.subplots(4, 1, sharex='all')
 
+            plt.sca(ax[0])
+            plt.cla()
             ax[0].plot(t, v1)
             ax[0].grid()
-            # ax[0].set_title(scenario)
             ax[0].set_ylabel("x(m)")
 
+            plt.sca(ax[1])
+            plt.cla()
             ax[1].plot(t, v2)
             ax[1].grid()
             ax[1].set_ylabel("x dot (m/s)")
 
+            plt.sca(ax[2])
+            plt.cla()
             ax[2].plot(t, v3)
             ax[2].grid()
             ax[2].set_ylabel("error")
-            # ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
 
+            plt.sca(ax[3])
+            plt.cla()
             ax[3].plot(t, v4)
             ax[3].grid()
             ax[3].set_ylabel("force(N)")
-            ax[3].set_yticks(np.arange(7, 14, 1))
 
-            if visualize:
-                print(f"Rise Time = {t_90-t_10}")
-            return fig
+            print(f"Rise Time = {t_90-t_10}")
+            return fig, ax
 
         # # Added Penalty of not moving
         if x == 0.0 and x_dot == 0.0:
@@ -129,6 +132,7 @@ class Scenario(SuperScenario):
             s += f"Generation {i+1} Best = {self.population.best_fitness}\n"
             s += f"Generation {i+1} Worst = {self.population.worst_fitness}\n"
             print(s)
+            self.visualize(False)
 
         print("-------------------------------------")
         print(f"No OF Species = {self.population.get_species_size()}")
