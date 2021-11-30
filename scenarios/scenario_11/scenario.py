@@ -1,12 +1,11 @@
-from typing import Union
+from typing import Union, Any
 from pathlib import Path  # type: ignore
-import numpy as np
 from plotly.subplots import make_subplots  # type: ignore
 import plotly.graph_objects as go  # type: ignore
 import matplotlib.pyplot as plt
 
 from neuron.core.coder import StepEncoder, SFDecoder
-from neuron.core.params_loader import GENERATIONS, POPULATION_SIZE, TIME_STEP, SAMPLES, t
+from neuron.core.params_loader import TIME_STEP, SAMPLES, t
 from neuron.utils.randomizer import Randomizer
 from neuron.optimizer.neat.genome import Genome
 from neuron.optimizer.neat.core import Neat
@@ -25,15 +24,14 @@ class Scenario(SuperScenario):
     """
 
     def __init__(self) -> None:
-        self.file_name = f"{Path().absolute()}/scenarios/scenario_11/scenario_11"
+        # Set Random seed
+        Randomizer.seed(0)
+        neat = Neat(2, 2)
+        file_name = f"{Path().absolute()}/scenarios/scenario_11/scenario_11"
+        super().__init__(file_name=file_name, neat=neat)
 
     @staticmethod
-    def fitness_function(genome: Genome,
-                         ref: float = 1.0,
-                         mass: float = 1.0,
-                         disturbance_magnitude: float = 0.0,
-                         visualize: bool = False) -> Union[float, None]:
-
+    def fitness_function(genome: Genome, visualize: bool = False, f_fig=None, f_ax=None, *args, **kwargs) -> Union[float, Any, None]:
         output_decoder_threshold = 1
         output_base = 9.81
         decoder = SFDecoder(output_base, output_decoder_threshold)
@@ -44,24 +42,30 @@ class Scenario(SuperScenario):
             v2 = [0.0] * SAMPLES
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
-            # spike_trains = [[], [], [], []]
-        x_ref = ref
-        x_dot_ref = 0
+
+        x_ref = 1
         total_error = 0.0
-        x = 0
-        x_dot = 0
+
+        x = reference_model(t[0])
+        x_dot = reference_model_dot(t[0])
+
+        mass = kwargs['mass'] if ('mass' in kwargs) else 1
+
         ball = LevitatingBall(mass, x, x_dot)
+
+        disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
+
         t_10 = 0
         t_90 = 0
-        # Simulation Loop
 
+        # Simulation Loop
         for i in range(SAMPLES):
             s = reference_model(t[i])
             s_dot = reference_model_dot(t[i])
             e = (s - x) + (s_dot - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             if -0.001 < e < 0.001:
                 e = 0
-            total_error += abs(e)  # absolute error
+            total_error += abs(s - x) + abs(s_dot - x_dot)  # absolute error
             ######################
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
@@ -77,84 +81,44 @@ class Scenario(SuperScenario):
                     t_90 = t[i]
 
         if visualize:
-            fig, ax = plt.subplots(4, 1, sharex='all')
+            if not f_fig and not f_ax:
+                f_fig, f_ax = plt.subplots(4, 1, sharex='all')
 
-            ax[0].plot(t, v1)
-            ax[0].grid()
-            ax[0].set_ylabel("x(m)")
-            ax[0].legend(["x", "x_r"], loc="lower right")
+            plt.sca(f_ax[0])
+            plt.cla()
+            f_ax[0].plot(t, v1)
+            f_ax[0].grid()
+            f_ax[0].set_ylabel("x(m)")
+            f_ax[0].legend(["x", "x_r"], loc="lower right")
 
-            ax[1].plot(t, v2)
-            ax[1].grid()
-            ax[1].set_ylabel("x dot (m/s)")
-            ax[1].legend(["x_dot", "x_dot_r"], loc="lower right")
+            plt.sca(f_ax[1])
+            plt.cla()
+            f_ax[1].plot(t, v2)
+            f_ax[1].grid()
+            f_ax[1].set_ylabel("x dot (m/s)")
+            f_ax[1].legend(["x_dot", "x_dot_r"], loc="lower right")
 
-            ax[2].plot(t, v3)
-            ax[2].grid()
-            ax[2].set_ylabel("error")
-            ax[2].set_yticks(np.arange(-0.05, 0.09, 0.05))
+            plt.sca(f_ax[2])
+            plt.cla()
+            f_ax[2].plot(t, v3)
+            f_ax[2].grid()
+            f_ax[2].set_ylabel("error")
 
-            ax[3].plot(t, v4)
-            ax[3].grid()
-            ax[3].set_ylabel("force(N)")
-            ax[3].set_yticks(np.arange(7, 21, 3))
+            plt.sca(f_ax[3])
+            plt.cla()
+            f_ax[3].plot(t, v4)
+            f_ax[3].grid()
+            f_ax[3].set_ylabel("force(N)")
 
-            if visualize:
-                print(f"Rise Time = {t_90 - t_10}")
-            return fig
+            print(f"Rise Time = {t_90 - t_10}")
+
+            return f_fig, f_ax
 
         if x == 0.0 and x_dot == 0.0:
-            return np.Inf
+            return 10
+
+        if x == 0.0 and x_dot == 0.0:
+            return 10
 
         return total_error/SAMPLES
 
-    def run(self) -> None:
-        # Set Random seed
-        Randomizer.seed(0)
-
-        # init NEAT
-        self.neat = Neat(2, 2)
-
-        # Generate Population
-        self.population = self.neat.generate_population(POPULATION_SIZE, self.fitness_function)
-
-        # Print Start Message
-        print(f"Starting Neat with population of {POPULATION_SIZE} for {GENERATIONS} generations")
-
-        convergence: list[float] = []
-
-        for i in range(GENERATIONS):
-            # update population
-            self.population.update(i == GENERATIONS, save_file_name=self.file_name)
-            convergence.append(self.population.best_fitness)
-            # print updates
-            s = f"----- Generation {i + 1} -----\n"
-            s += f"Generation {i + 1} Best = {self.population.best_fitness}\n"
-            s += f"Generation {i + 1} Worst = {self.population.worst_fitness}\n"
-            print(s)
-
-        print("-------------------------------------")
-        print(f"No OF Species = {self.population.get_species_size()}")
-        fig = go.Figure(data=go.Scatter(x=np.arange(1, len(convergence) + 1, 1), y=convergence))
-        fig.update_layout(height=720, width=1080, title_text=f"{self.__class__.__name__} Convergence")
-        fig.update_xaxes(dtick=1)
-        fig['layout']['yaxis']['title'] = 'fitness'
-        fig['layout']['xaxis']['title'] = 'generation'
-
-        fig.show()
-        fig.write_image(f"{self.file_name}_convergence_curve.png")
-
-    def visualize_and_save(self, ref: float = 1.0, mass: float = 1.0, disturbance_magnitude: float = 0.0):
-
-        genome: Genome = Genome.load(self.file_name)
-        self.fitness_function(genome,
-                              ref=ref,
-                              visualize=True,
-                              mass=mass,
-                              disturbance_magnitude=disturbance_magnitude)
-        plt.xlabel("t(s)")
-        plt.savefig(f"{self.file_name}_ST.eps")
-        plt.savefig(f"{self.file_name}_ST.png")
-        plt.show()
-
-        # genome.visualize(self.file_name)
