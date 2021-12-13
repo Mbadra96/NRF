@@ -35,6 +35,10 @@ class SuperScenario:
             fig, ax = self.fitness_function(genome, visualize=True, f_fig=fig, f_ax=ax, *args, **kwargs)
             plt.show()
 
+    def visualize_save(self, block: bool = True, *args, **kwargs) -> None:
+        self.visualize(False)
+        plt.savefig(f"{self.file_name}.png")
+
     def visualize_genome_and_save(self, *args, **kwargs):
         genome: Genome = Genome.load(self.file_name)
         genome.visualize(self.file_name)
