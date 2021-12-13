@@ -38,6 +38,7 @@ class SuperScenario:
     def visualize_save(self, block: bool = True, *args, **kwargs) -> None:
         self.visualize(False)
         plt.savefig(f"{self.file_name}.png")
+        plt.savefig(f"{self.file_name}.eps")
 
     def visualize_genome_and_save(self, *args, **kwargs):
         genome: Genome = Genome.load(self.file_name)
