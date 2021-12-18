@@ -18,11 +18,14 @@ def main() -> None:
     v = [0.0] * len(t)
     v_dot = [0.0] * len(t)
 
-    for i, t_s in enumerate(t):
-        v[i] = reference_model(t_s)
-        v_dot[i] = reference_model_dot(t_s)
+    for i in range(1, len(t)):
+        v[i] = reference_model(t[i])
+        v_dot[i] = reference_model_dot(t[i])
 
+    plt.subplot(2, 1, 1)
     plt.plot(t, v)
+    plt.grid()
+    plt.subplot(2, 1, 2)
     plt.plot(t, v_dot)
     plt.grid()
     plt.show()
