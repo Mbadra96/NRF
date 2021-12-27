@@ -10,4 +10,4 @@ if __name__ == "__main__":
     scenario: SuperScenario = scenarioModule.Scenario()  # type: ignore
 
     # --------------------- START TESTING ---------------------
-    scenario.visualize()
+    scenario.test()

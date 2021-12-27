@@ -77,18 +77,16 @@ class InvertedPendulumSimulation:
         encoder = StepEncoder()
         genome: Genome = Genome.load(f"{Path().absolute()}/scenarios/scenario_14/scenario_14")
         cont = genome.build_phenotype(TIME_STEP)
-        pen = InvertedPendulum()
+        pen = InvertedPendulum(theta_0=pi+0.01)
 
         theta_ref = pi
         theta_dot_ref = 0
-        theta = 0
+        theta = pi + 0.01
         theta_dot = 0
 
         for i in range(SAMPLES):
             pygame.time.delay(int(TIME_STEP*1000))
-            s = reference_model(t[i])
-            s_dot = reference_model_dot(t[i])
-            e = (s - theta) + (s_dot - theta_dot)
+            e = (theta_ref - theta) + (theta_dot_ref - theta_dot)
 
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)

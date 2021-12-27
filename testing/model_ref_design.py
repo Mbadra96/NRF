@@ -10,6 +10,7 @@ def reference_model(time: float) -> float:
 
 
 def reference_model_dot(time: float) -> float:
+
     return 2.796415937 * exp(-4 * time / 3) * sin(1.819168472 * time)
 
 

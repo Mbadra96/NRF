@@ -44,12 +44,12 @@ class Scenario(SuperScenario):
             v3 = [0.0] * SAMPLES
             v4 = [0.0] * SAMPLES
 
-        theta_ref = 1
+        theta_ref = pi
         theta_dot_ref = 0
         total_error = 0.0
         theta = 0
         theta_dot = 0
-        pen = InvertedPendulum()
+        pen = InvertedPendulum(theta_0=theta)
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
         t_10 = 0
         t_90 = 0

@@ -72,6 +72,7 @@ class SuperScenario:
         plt.xlabel('generation')
         plt.ylabel('fitness')
         plt.savefig(f"{self.file_name}_convergence_curve.png")
+        plt.grid()
         plt.show()
 
     def test(self):
