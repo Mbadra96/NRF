@@ -76,10 +76,4 @@ class SuperScenario:
         plt.show()
 
     def test(self):
-        try:
-            self.run()
-        except KeyboardInterrupt:
-            print("STOP Evolving")
-            print("Saving and Exiting")
-        except Exception as e:
-            print(e)
+        self.run()
