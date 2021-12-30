@@ -1,15 +1,20 @@
 from neuron.utils.units import *
 from neuron.simulation.levitating_ball import LevitatingBall
-from plotly.subplots import make_subplots # type: ignore
-import plotly.graph_objects as go # type: ignore
 import numpy as np
-from math import sin,pi
+import matplotlib.pyplot as plt
 
-TIME = 5 * sec
-TIMESTEP = 0.5 * ms # dt is 0.1 ms
+
+# In Conclusion of the error hassle it is notices that the error in the PID should be the difference in the heights only
+# an it works with some modifications to the (KI, KP, KD) terms.
+# but adding the velocity error to the error function shows more stability to the control input function for some reason
+# which should be more logical in my point of view as it should give control to the velocity state in addition to
+# the position state.
+
+TIME = 10 * sec
+TIMESTEP = 0.5 * ms # dt is 0.5 ms
 SAMPLES = int(TIME/TIMESTEP)
 
-t = np.arange(0,TIME,TIMESTEP)
+t = np.arange(0, TIME, TIMESTEP)
 v1 = [0.0]*SAMPLES
 v2 = [0.0]*SAMPLES
 v3 = [0.0]*SAMPLES
@@ -17,48 +22,44 @@ v3 = [0.0]*SAMPLES
 print(f"Simulation of Neuron Pool for TIME = {TIME} sec and TIMESTEP = {TIMESTEP} ms with SAMPLES = {SAMPLES}")
 
 F = 0.0
-kp = 20
-ki = 10
+kp = 10
+ki = 14
 kd = 0.1
 x_ref = 1
 x_dot_ref = 0
 e_I = 0.0
 e_last = 0.0
 e_dot = 0.0
-total_error = 0.0
+
 if __name__ == "__main__":
-    ball = LevitatingBall(1,0,0)
-    total_F = 0.0
-    for i in range(SAMPLES):    
-        v1[i],v2[i]=ball.step(F,t[i],TIMESTEP)
+
+    ball = LevitatingBall(1, 0, 0)
+
+    for i in range(SAMPLES):
+        v1[i], v2[i] = ball.step(F, t[i], TIMESTEP)
+
+        # Get Errors
         e = (x_ref - v1[i]) + (x_dot_ref - v2[i])
-        e_I += e
-        total_error += abs((x_ref - v1[i])/10.0) + abs(x_dot_ref - v2[i])/10
-        v3[i] = F
-        e_dot = (e - e_last)/TIMESTEP
-        F = (kp * e) + (ki * e_I) + (kd * e_dot)
-        total_F += abs(F/20)
+        e_I = e_I + e * TIMESTEP
+        e_dot = (e - e_last) / TIMESTEP
+        # Update Error
         e_last = e
-        
-    print(total_error)
-    
-    fig = make_subplots(rows=3, cols=1)
 
-    fig.add_trace(
-        go.Scatter(x=t, y=v1),
-        row=1, col=1
-    )
+        # Get Force
+        F = (kp * e) + (ki * e_I) + (kd * e_dot)
+        v3[i] = F
 
-    fig.add_trace(
-        go.Scatter(x=t, y=v2),
-        row=2, col=1
-    )
+    plt.subplot(3, 1, 1)
+    plt.plot(t, v1)
+    plt.grid()
 
-    fig.add_trace(
-        go.Scatter(x=t, y=v3),
-        row=3, col=1
-    )
-    fig.update_layout(height=720, width=1080, title_text="Side By Side Subplots")
-    # fig.show()
-    fig.write_image("pid.png")
+    plt.subplot(3, 1, 2)
+    plt.plot(t, v2)
+    plt.grid()
+
+    plt.subplot(3, 1, 3)
+    plt.plot(t, v3)
+    plt.grid()
+
+    plt.show()
     
