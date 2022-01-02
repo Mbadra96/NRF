@@ -1,0 +1,504 @@
+"C:\Users\Mohamed Badra\AppData\Local\Programs\Python\Python310\python.exe" D:/Work/Masters/Dev/NRF/main.py
+Starting Neat with population of 100 for 100 generations
+----- Generation 1 -----
+Generation 1 Best = 0.050775087498940386
+Generation 1 Worst = 10
+
+Rise Time = 0
+----- Generation 2 -----
+Generation 2 Best = 0.04601464540648054
+Generation 2 Worst = 10
+
+Rise Time = 0
+----- Generation 3 -----
+Generation 3 Best = 0.04579871222120741
+Generation 3 Worst = 10
+
+Rise Time = 0
+----- Generation 4 -----
+Generation 4 Best = 0.04579871222120741
+Generation 4 Worst = 10
+
+Rise Time = 0
+----- Generation 5 -----
+Generation 5 Best = 0.04579871222120741
+Generation 5 Worst = 10
+
+Rise Time = 0
+----- Generation 6 -----
+Generation 6 Best = 0.04579871222120741
+Generation 6 Worst = 10
+
+Rise Time = 0
+----- Generation 7 -----
+Generation 7 Best = 0.04579155118020852
+Generation 7 Worst = 10
+
+Rise Time = 0
+----- Generation 8 -----
+Generation 8 Best = 0.04579155118020852
+Generation 8 Worst = 10
+
+Rise Time = 0
+----- Generation 9 -----
+Generation 9 Best = 0.04579155118020852
+Generation 9 Worst = 10
+
+Rise Time = 0
+----- Generation 10 -----
+Generation 10 Best = 0.04579155118020852
+Generation 10 Worst = 10
+
+Rise Time = 0
+----- Generation 11 -----
+Generation 11 Best = 0.04579155118020852
+Generation 11 Worst = 10
+
+Rise Time = 0
+----- Generation 12 -----
+Generation 12 Best = 0.04579155118020852
+Generation 12 Worst = 10
+
+Rise Time = 0
+----- Generation 13 -----
+Generation 13 Best = 0.04579155118020852
+Generation 13 Worst = 6.389547295158424
+
+Rise Time = 0
+----- Generation 14 -----
+Generation 14 Best = 0.04579155118020852
+Generation 14 Worst = 2.918842489708211
+
+Rise Time = 0
+----- Generation 15 -----
+Generation 15 Best = 0.04579155118020852
+Generation 15 Worst = 2.918842489708211
+
+Rise Time = 0
+----- Generation 16 -----
+Generation 16 Best = 0.04578893644840962
+Generation 16 Worst = 2.393595328609681
+
+Rise Time = 0
+----- Generation 17 -----
+Generation 17 Best = 0.04578893644840962
+Generation 17 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 18 -----
+Generation 18 Best = 0.04578893644840962
+Generation 18 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 19 -----
+Generation 19 Best = 0.04578893644840962
+Generation 19 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 20 -----
+Generation 20 Best = 0.04578893644840962
+Generation 20 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 21 -----
+Generation 21 Best = 0.04578893644840962
+Generation 21 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 22 -----
+Generation 22 Best = 0.04578893644840962
+Generation 22 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 23 -----
+Generation 23 Best = 0.04578893644840962
+Generation 23 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 24 -----
+Generation 24 Best = 0.04578893644840962
+Generation 24 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 25 -----
+Generation 25 Best = 0.04578893644840962
+Generation 25 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 26 -----
+Generation 26 Best = 0.04578002470325541
+Generation 26 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 27 -----
+Generation 27 Best = 0.04578002470325541
+Generation 27 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 28 -----
+Generation 28 Best = 0.04578002470325541
+Generation 28 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 29 -----
+Generation 29 Best = 0.04578002470325541
+Generation 29 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 30 -----
+Generation 30 Best = 0.04578002470325541
+Generation 30 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 31 -----
+Generation 31 Best = 0.04578002470325541
+Generation 31 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 32 -----
+Generation 32 Best = 0.04572986250592589
+Generation 32 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 33 -----
+Generation 33 Best = 0.04572986250592589
+Generation 33 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 34 -----
+Generation 34 Best = 0.045700230677039856
+Generation 34 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 35 -----
+Generation 35 Best = 0.045700230677039856
+Generation 35 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 36 -----
+Generation 36 Best = 0.045700230677039856
+Generation 36 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 37 -----
+Generation 37 Best = 0.045700230677039856
+Generation 37 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 38 -----
+Generation 38 Best = 0.045700230677039856
+Generation 38 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 39 -----
+Generation 39 Best = 0.045700230677039856
+Generation 39 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 40 -----
+Generation 40 Best = 0.045700230677039856
+Generation 40 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 41 -----
+Generation 41 Best = 0.045700230677039856
+Generation 41 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 42 -----
+Generation 42 Best = 0.045700230677039856
+Generation 42 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 43 -----
+Generation 43 Best = 0.045700230677039856
+Generation 43 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 44 -----
+Generation 44 Best = 0.045700230677039856
+Generation 44 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 45 -----
+Generation 45 Best = 0.045700230677039856
+Generation 45 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 46 -----
+Generation 46 Best = 0.045700230677039856
+Generation 46 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 47 -----
+Generation 47 Best = 0.045700230677039856
+Generation 47 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 48 -----
+Generation 48 Best = 0.045700230677039856
+Generation 48 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 49 -----
+Generation 49 Best = 0.045700230677039856
+Generation 49 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 50 -----
+Generation 50 Best = 0.04558235130037912
+Generation 50 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 51 -----
+Generation 51 Best = 0.04558235130037912
+Generation 51 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 52 -----
+Generation 52 Best = 0.04558235130037912
+Generation 52 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 53 -----
+Generation 53 Best = 0.04558235130037912
+Generation 53 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 54 -----
+Generation 54 Best = 0.04558235130037912
+Generation 54 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 55 -----
+Generation 55 Best = 0.04558235130037912
+Generation 55 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 56 -----
+Generation 56 Best = 0.04558235130037912
+Generation 56 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 57 -----
+Generation 57 Best = 0.04558235130037912
+Generation 57 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 58 -----
+Generation 58 Best = 0.04558235130037912
+Generation 58 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 59 -----
+Generation 59 Best = 0.045479721881516125
+Generation 59 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 60 -----
+Generation 60 Best = 0.045479721881516125
+Generation 60 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 61 -----
+Generation 61 Best = 0.045479721881516125
+Generation 61 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 62 -----
+Generation 62 Best = 0.045479721881516125
+Generation 62 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 63 -----
+Generation 63 Best = 0.045479721881516125
+Generation 63 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 64 -----
+Generation 64 Best = 0.045479721881516125
+Generation 64 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 65 -----
+Generation 65 Best = 0.045479721881516125
+Generation 65 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 66 -----
+Generation 66 Best = 0.045479721881516125
+Generation 66 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 67 -----
+Generation 67 Best = 0.045479721881516125
+Generation 67 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 68 -----
+Generation 68 Best = 0.045479721881516125
+Generation 68 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 69 -----
+Generation 69 Best = 0.045479721881516125
+Generation 69 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 70 -----
+Generation 70 Best = 0.045479721881516125
+Generation 70 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 71 -----
+Generation 71 Best = 0.045479721881516125
+Generation 71 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 72 -----
+Generation 72 Best = 0.045479721881516125
+Generation 72 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 73 -----
+Generation 73 Best = 0.04546196630818606
+Generation 73 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 74 -----
+Generation 74 Best = 0.04546196630818606
+Generation 74 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 75 -----
+Generation 75 Best = 0.04546196630818606
+Generation 75 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 76 -----
+Generation 76 Best = 0.045460220479509726
+Generation 76 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 77 -----
+Generation 77 Best = 0.045460220479509726
+Generation 77 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 78 -----
+Generation 78 Best = 0.045460220479509726
+Generation 78 Worst = 2.1893547169455787
+
+Rise Time = 0
+----- Generation 79 -----
+Generation 79 Best = 0.045460220479509726
+Generation 79 Worst = 0.04968608336720605
+
+Rise Time = 0
+----- Generation 80 -----
+Generation 80 Best = 0.04545949936137294
+Generation 80 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 81 -----
+Generation 81 Best = 0.04545949936137294
+Generation 81 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 82 -----
+Generation 82 Best = 0.04544296217360607
+Generation 82 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 83 -----
+Generation 83 Best = 0.04544296217360607
+Generation 83 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 84 -----
+Generation 84 Best = 0.04544296217360607
+Generation 84 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 85 -----
+Generation 85 Best = 0.045411307961887686
+Generation 85 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 86 -----
+Generation 86 Best = 0.045411307961887686
+Generation 86 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 87 -----
+Generation 87 Best = 0.045411307961887686
+Generation 87 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 88 -----
+Generation 88 Best = 0.045411307961887686
+Generation 88 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 89 -----
+Generation 89 Best = 0.045411307961887686
+Generation 89 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 90 -----
+Generation 90 Best = 0.045411307961887686
+Generation 90 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 91 -----
+Generation 91 Best = 0.045411307961887686
+Generation 91 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 92 -----
+Generation 92 Best = 0.045411307961887686
+Generation 92 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 93 -----
+Generation 93 Best = 0.045411307961887686
+Generation 93 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 94 -----
+Generation 94 Best = 0.04540606734728958
+Generation 94 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 95 -----
+Generation 95 Best = 0.04540606734728958
+Generation 95 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 96 -----
+Generation 96 Best = 0.04540606734728958
+Generation 96 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 97 -----
+Generation 97 Best = 0.04540606734728958
+Generation 97 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 98 -----
+Generation 98 Best = 0.04540606734728958
+Generation 98 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 99 -----
+Generation 99 Best = 0.04540606734728958
+Generation 99 Worst = 0.04582432583433669
+
+Rise Time = 0
+----- Generation 100 -----
+Generation 100 Best = 0.04540606734728958
+Generation 100 Worst = 0.04582432583433669
+
+Rise Time = 0
+
+Process finished with exit code 0

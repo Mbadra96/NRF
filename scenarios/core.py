@@ -71,8 +71,8 @@ class SuperScenario:
         plt.plot(np.arange(1, len(convergence) + 1, 1), convergence)
         plt.xlabel('generation')
         plt.ylabel('fitness')
-        plt.savefig(f"{self.file_name}_convergence_curve.png")
         plt.grid()
+        plt.savefig(f"{self.file_name}_convergence_curve.png")
         plt.show()
 
     def test(self):

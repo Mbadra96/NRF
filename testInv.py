@@ -71,33 +71,33 @@ class InvertedPendulumSimulation:
         pygame.draw.circle(self.screen, (0, 0, 255), (x_circle, y_circle), radius)
 
     def run(self):
-        output_decoder_threshold = 0.1
-        output_base = 0
-        decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = StepEncoder()
-        genome: Genome = Genome.load(f"{Path().absolute()}/scenarios/scenario_14/scenario_14")
+        genome: Genome = Genome.load(f"{Path().absolute()}/scenarios/scenario_19/scenario_19")
         cont = genome.build_phenotype(TIME_STEP)
-        pen = InvertedPendulum(theta_0=pi+0.01)
+
 
         theta_ref = pi
         theta_dot_ref = 0
-        theta = pi + 0.01
+        theta = pi - 0.1
         theta_dot = 0
-
+        pen = InvertedPendulum(theta_0=theta)
+        x = 0
+        f_filt = 0
         for i in range(SAMPLES):
             pygame.time.delay(int(TIME_STEP*1000))
             e = (theta_ref - theta) + (theta_dot_ref - theta_dot)
 
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
-            f = decoder.decode(*action)  # Controller
-            theta, theta_dot, _, _ = pen.step(f, t[i], TIME_STEP)  # Model
+            f = - 100 * action[0] + 100 * action[1]
+            f_filt = f_filt + 0.1 * (f - f_filt)  # LOW PASS Filter
+            theta, theta_dot, x, _ = pen.step(f_filt, t[i], TIME_STEP)  # Model
             self.angle = theta
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
                     exit()
-
+            print(x)
             self.screen.fill((255, 255, 255))
             self.draw()
             pygame.display.flip()
