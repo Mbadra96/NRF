@@ -72,11 +72,11 @@ class Scenario(SuperScenario):
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = x, x_dot, e, f_filt
-                # if t_10 == 0 and x >= 0.1 * x_ref:
-                #     t_10 = t[i]
-                #
-                # if t_90 == 0 and x >= 0.9 * x_ref:
-                #     t_90 = t[i]
+                if t_10 == 0 and x >= 0.1 * x_ref:
+                    t_10 = t[i]
+
+                if t_90 == 0 and x >= 0.9 * x_ref:
+                    t_90 = t[i]
 
         if visualize:
             if not f_fig and not f_ax:
@@ -107,6 +107,7 @@ class Scenario(SuperScenario):
             f_ax[3].set_ylabel("force(N)")
 
             print(f"Rise Time = {t_90-t_10}")
+            print(f"Error={total_error/SAMPLES}")
             return f_fig, f_ax
 
         # # Added Penalty of not moving

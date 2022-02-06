@@ -46,7 +46,8 @@ class Scenario(SuperScenario):
 
         w_1_filt = 0
         w_2_filt = 0
-
+        t_10 = 0
+        t_90 = 0
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
@@ -71,6 +72,11 @@ class Scenario(SuperScenario):
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = theta, theta_dot, e, (w_1_filt, w_2_filt)
+                if t_10 == 0 and theta <= 0.9:
+                    t_10 = t[i]
+
+                if t_90 == 0 and theta <= 0.1:
+                    t_90 = t[i]
 
         if visualize:
             if not f_fig and not f_ax:
@@ -99,7 +105,8 @@ class Scenario(SuperScenario):
             f_ax[3].plot(t, v4)
             f_ax[3].grid()
             f_ax[3].set_ylabel("W1 & W2")
-
+            print(f"Rise Time = {t_90 - t_10}")
+            print(f"Error = {total_error/SAMPLES}")
             return f_fig, f_ax
 
         if theta == 0 and theta_dot == 0:

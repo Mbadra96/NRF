@@ -67,10 +67,10 @@ class Scenario(SuperScenario):
 
             if visualize:
                 v1[i], v2[i], v3[i], v4[i] = theta, theta_dot, e1, f_filt
-                if t_10 == 0 and theta >= 0.1 * theta_ref:
+                if t_10 == 0 and theta >= 3.0515:
                     t_10 = t[i]
 
-                if t_90 == 0 and theta >= 0.9 * theta_ref:
+                if t_90 == 0 and theta >= 3.1315:
                     t_90 = t[i]
 
         if visualize:
@@ -81,13 +81,13 @@ class Scenario(SuperScenario):
             plt.cla()
             f_ax[0].plot(t, v1)
             f_ax[0].grid()
-            f_ax[0].set_ylabel("x(m)")
+            f_ax[0].set_ylabel(r"$\varphi$")
 
             plt.sca(f_ax[1])
             plt.cla()
             f_ax[1].plot(t, v2)
             f_ax[1].grid()
-            f_ax[1].set_ylabel("x dot (m/s)")
+            f_ax[1].set_ylabel(r"$\.\varphi$")
 
             plt.sca(f_ax[2])
             plt.cla()
@@ -102,6 +102,7 @@ class Scenario(SuperScenario):
             f_ax[3].set_ylabel("force(N)")
 
             print(f"Rise Time = {t_90-t_10}")
+            print(f"Error = {total_error/SAMPLES}")
             return f_fig, f_ax
 
         # # Added Penalty of not moving

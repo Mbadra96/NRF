@@ -98,6 +98,7 @@ class Scenario(SuperScenario):
             f_ax[3].set_ylabel("force(N)")
 
             print(f"Rise Time = {t_90-t_10}")
+            print(total_error / SAMPLES)
             return f_fig, f_ax
 
         # # Added Penalty of not moving

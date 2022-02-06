@@ -1,7 +1,6 @@
 from typing import Union, Any
 from pathlib import Path  # type: ignore
 import matplotlib.pyplot as plt
-import numpy as np
 
 from neuron.core.coder import StepEncoder, SFDecoder
 from neuron.core.params_loader import TIME_STEP, SAMPLES, t
@@ -11,9 +10,6 @@ from neuron.optimizer.neat.core import Neat
 from neuron.simulation.inverted_pendulum import InvertedPendulum
 from scenarios.core import SuperScenario
 from math import pi
-
-from testing.model_ref_design import reference_model, reference_model_dot
-
 
 class Scenario(SuperScenario):
     """
@@ -33,7 +29,7 @@ class Scenario(SuperScenario):
 
     @staticmethod
     def fitness_function(genome: Genome, visualize: bool = False, f_fig=None, f_ax=None, *args, **kwargs) -> Union[float, Any, None]:
-        output_decoder_threshold = 0.1
+        output_decoder_threshold = 1
         output_base = 0
         decoder = SFDecoder(output_base, output_decoder_threshold)
         encoder = StepEncoder()
@@ -47,7 +43,7 @@ class Scenario(SuperScenario):
         theta_ref = pi
         theta_dot_ref = 0
         total_error = 0.0
-        theta = 0
+        theta = pi - 0.1
         theta_dot = 0
         pen = InvertedPendulum(theta_0=theta)
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
@@ -55,7 +51,7 @@ class Scenario(SuperScenario):
         t_90 = 0
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (theta_ref - theta) + (theta_dot_ref - theta_dot)  # + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e = 10*(theta_ref - theta) + (theta_dot_ref - theta_dot)  # + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             total_error += abs(e)
             ######################
             sensors = encoder.encode(e)
@@ -99,7 +95,7 @@ class Scenario(SuperScenario):
             f_ax[3].grid()
             f_ax[3].set_ylabel("force(N)")
 
-            print(f"Rise Time = {t_90-t_10}")
+            # print(f"Rise Time = {t_90-t_10}")
             return f_fig, f_ax
 
         # # Added Penalty of not moving
