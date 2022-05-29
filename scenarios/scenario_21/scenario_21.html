@@ -1,0 +1,108 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 500px;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "blue", "id": 0, "label": "N0", "shape": "dot"}, {"color": "blue", "id": 1, "label": "N1", "shape": "dot"}, {"color": "red", "id": 2, "label": "N2", "shape": "dot"}, {"color": "red", "id": 3, "label": "N3", "shape": "dot"}, {"color": "green", "id": 4, "label": "N4", "shape": "dot"}, {"color": "green", "id": 5, "label": "N5", "shape": "dot"}, {"color": "green", "id": 6, "label": "N6", "shape": "dot"}, {"color": "green", "id": 7, "label": "N7", "shape": "dot"}, {"color": "green", "id": 8, "label": "N8", "shape": "dot"}, {"color": "green", "id": 9, "label": "N9", "shape": "dot"}, {"color": "green", "id": 10, "label": "N10", "shape": "dot"}, {"color": "green", "id": 11, "label": "N11", "shape": "dot"}, {"color": "green", "id": 12, "label": "N12", "shape": "dot"}, {"color": "green", "id": 13, "label": "N13", "shape": "dot"}, {"color": "green", "id": 14, "label": "N14", "shape": "dot"}, {"color": "green", "id": 15, "label": "N15", "shape": "dot"}, {"color": "green", "id": 16, "label": "N16", "shape": "dot"}, {"color": "green", "id": 17, "label": "N17", "shape": "dot"}, {"color": "green", "id": 18, "label": "N18", "shape": "dot"}, {"color": "green", "id": 19, "label": "N19", "shape": "dot"}, {"color": "green", "id": 20, "label": "N20", "shape": "dot"}]);
+        edges = new vis.DataSet([{"arrows": "to", "from": 0, "title": "C0 : 0.9950224276359825", "to": 2}, {"arrows": "to", "from": 1, "title": "C3 : 0.8235666362590444", "to": 3}, {"arrows": "to", "from": 0, "title": "C4 : 0.37640060713706647", "to": 4}, {"arrows": "to", "from": 4, "title": "C5 : 0.9731678975624378", "to": 3}, {"arrows": "to", "from": 1, "title": "C6 : 0.4631966124507212", "to": 4}, {"arrows": "to", "from": 5, "title": "C8 : 0.8337748161820187", "to": 2}, {"arrows": "to", "from": 0, "title": "C9 : -0.6811754368964649", "to": 5}, {"arrows": "to", "from": 6, "title": "C11 : 1.0", "to": 4}, {"arrows": "to", "from": 7, "title": "C13 : 1.0", "to": 5}, {"arrows": "to", "from": 1, "title": "C14 : 0.8235666362590444", "to": 6}, {"arrows": "to", "from": 0, "title": "C15 : -0.7583967347590292", "to": 7}, {"arrows": "to", "from": 1, "title": "C16 : 0.8235666362590444", "to": 8}, {"arrows": "to", "from": 8, "title": "C17 : 1.0", "to": 6}, {"arrows": "to", "from": 9, "title": "C19 : 1.0", "to": 7}, {"arrows": "to", "from": 1, "title": "C20 : 0.8235666362590444", "to": 10}, {"arrows": "to", "from": 10, "title": "C21 : 0.8285337966604627", "to": 8}, {"arrows": "to", "from": 0, "title": "C22 : -0.651419667507557", "to": 9}, {"arrows": "to", "from": 11, "title": "C24 : 1.0", "to": 9}, {"arrows": "to", "from": 1, "title": "C26 : 0.8235666362590444", "to": 12}, {"arrows": "to", "from": 12, "title": "C27 : 0.3609020743624054", "to": 10}, {"arrows": "to", "from": 0, "title": "C28 : -0.651419667507557", "to": 11}, {"arrows": "to", "from": 1, "title": "C29 : 0.598682422843628", "to": 13}, {"arrows": "to", "from": 13, "title": "C30 : 1.0", "to": 11}, {"arrows": "to", "from": 1, "title": "C32 : 0.8847328120645959", "to": 14}, {"arrows": "to", "from": 14, "title": "C33 : 1.0", "to": 12}, {"arrows": "to", "from": 1, "title": "C34 : 0.598682422843628", "to": 15}, {"arrows": "to", "from": 15, "title": "C35 : 1.0", "to": 13}, {"arrows": "to", "from": 1, "title": "C37 : 0.4302841062718452", "to": 16}, {"arrows": "to", "from": 16, "title": "C38 : 1.0", "to": 14}, {"arrows": "to", "from": 17, "title": "C40 : 1.0", "to": 16}, {"arrows": "to", "from": 1, "title": "C42 : 0.8847328120645959", "to": 18}, {"arrows": "to", "from": 18, "title": "C43 : 1.0", "to": 17}, {"arrows": "to", "from": 1, "title": "C44 : 0.7041817468243741", "to": 19}, {"arrows": "to", "from": 19, "title": "C45 : 1.0", "to": 15}, {"arrows": "to", "from": 1, "title": "C46 : 0.8847328120645959", "to": 20}, {"arrows": "to", "from": 20, "title": "C47 : 1.0", "to": 18}, {"arrows": "to", "from": 0, "title": "C31 : 0.44508554417768", "to": 10}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
