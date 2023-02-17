@@ -38,21 +38,23 @@ class Scenario(SuperScenario):
         w_ref = 1  # rad/sec
         w = 0
         total_error = 0
-        motor = Motor(w_0=w)
+        J = kwargs['J'] if ('J' in kwargs) else 0.01
+        motor = Motor(w_0=w, J=J)
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
+        noise_magnitude = kwargs['noise_magnitude'] if ('noise_magnitude' in kwargs) else 0
         t_10 = 0
         t_90 = 0
         f_filt = 0
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (w_ref - w) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e = (w_ref - w) + Randomizer.Float(-noise_magnitude, noise_magnitude)
             total_error += abs(e)
             ######################
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
             f = - 100 * action[0] + 100 * action[1]
             # f_filt = f
-            f_filt = f_filt + 0.005 * (f - f_filt)
+            f_filt = f_filt + 0.005 * (f - f_filt) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
             w = motor.step(f_filt, t[i], TIME_STEP)  # Model
 
             if visualize:

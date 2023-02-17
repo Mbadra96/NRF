@@ -47,18 +47,19 @@ class Scenario(SuperScenario):
         x_dot = 0
         mass = kwargs['mass'] if ('mass' in kwargs) else 1
         ball = LevitatingBall(mass, x, x_dot)
+        noise_magnitude = kwargs['noise_magnitude'] if ('noise_magnitude' in kwargs) else 0
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
         t_10 = 0
         t_90 = 0
         # Simulation Loop
         f_filt = 0.0
         for i in range(SAMPLES):
-            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
+            e = (x_ref - x) + (x_dot_ref - x_dot) + Randomizer.Float(-noise_magnitude, noise_magnitude)
             total_error += abs(e)  # abs(x_ref - x) + abs((x_dot_ref - x_dot))
             ######################
             sensors = encoder.encode(e)
             action = cont.step(sensors, t[i], TIME_STEP)
-            f = decoder.decode(*action)  # Controller
+            f = decoder.decode(*action) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)   # Controller
             x, x_dot = ball.step(f, t[i], TIME_STEP)  # Model
 
             if visualize:

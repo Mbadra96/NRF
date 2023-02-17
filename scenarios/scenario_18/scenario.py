@@ -2,8 +2,7 @@ from typing import Union, Any
 from pathlib import Path  # type: ignore
 import numpy as np
 from math import inf
-from plotly.subplots import make_subplots  # type: ignore
-import plotly.graph_objects as go  # type: ignore
+
 import matplotlib.pyplot as plt
 
 from neuron.core.coder import StepEncoder, SFDecoder
@@ -36,13 +35,15 @@ class Scenario(SuperScenario):
         float, Any, None]:
 
         cont = genome.build_phenotype(TIME_STEP)
+        m = kwargs['m'] if ('m' in kwargs) else 1
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
+        noise_magnitude = kwargs['noise_magnitude'] if ('noise_magnitude' in kwargs) else 0
         theta_ref = 0.0
         theta_dot_ref = 0.0
         total_error = 0.0
         theta = 1.0
         theta_dot = 0.0
-        copter = BiCopter(theta=theta)
+        copter = BiCopter(theta=theta, m=m)
 
         w_1_filt = 0
         w_2_filt = 0
@@ -56,16 +57,15 @@ class Scenario(SuperScenario):
         encoder = StepEncoder()
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-disturbance_magnitude,
-                                                                                     disturbance_magnitude)
+            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-noise_magnitude, noise_magnitude)
             ###########################
             out = cont.step(encoder.encode(e), t[i], TIME_STEP)
 
             f1 = - out[0] + out[1]
             f2 = - out[2] + out[3]
 
-            w_1_filt = w_1_filt + 0.005 * (10*f1 - w_1_filt)  # LOW PASS Filter
-            w_2_filt = w_2_filt + 0.005 * (10*f2 - w_2_filt)  # LOW PASS Filter
+            w_1_filt = w_1_filt + 0.005 * (10*f1 - w_1_filt) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)  # LOW PASS Filter
+            w_2_filt = w_2_filt + 0.005 * (10*f2 - w_2_filt) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)  # LOW PASS Filter
 
             total_error += abs(e)
             theta, theta_dot = copter.step(w_1_filt, w_2_filt, t[i], TIME_STEP)  # Model

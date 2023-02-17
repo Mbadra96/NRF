@@ -88,10 +88,14 @@ class Population:
 
     def update(self, is_last: bool, save_file_name: str = "best"):
         # Evaluate all members in population
-        
-        for member in self.population:
-            member.fitness = self.evaluation_function(member.genome)
-        
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+            results = executor.map(self.evaluation_function, [member.genome for member in self.population])
+            for member, res in zip(self.population, results):
+                # future = executor.submit(self.evaluation_function, member.genome)
+                member.fitness = res #future.result()
+                # member.fitness = self.evaluation_function(member.genome)
+
         self.sort()
         self.update_species()
 

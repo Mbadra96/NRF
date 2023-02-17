@@ -1,9 +1,6 @@
 from typing import Union, Any
 from pathlib import Path  # type: ignore
-import numpy as np
 from math import inf
-from plotly.subplots import make_subplots  # type: ignore
-import plotly.graph_objects as go  # type: ignore
 import matplotlib.pyplot as plt
 
 from neuron.core.coder import StepEncoder, SFDecoder
@@ -45,8 +42,10 @@ class Scenario(SuperScenario):
         total_error = 0.0
         theta = 1.0
         theta_dot = 0.0
-        copter = BiCopter(theta=theta)
+        m = kwargs['m'] if ('m' in kwargs) else 1
+        copter = BiCopter(theta=theta, m=m)
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
+        noise_magnitude = kwargs['noise_magnitude'] if ('noise_magnitude' in kwargs) else 0
         if visualize:
             v1 = [0.0] * SAMPLES
             v2 = [0.0] * SAMPLES
@@ -57,12 +56,12 @@ class Scenario(SuperScenario):
         t_90 = 0
         # Simulation Loop
         for i in range(SAMPLES):
-            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-disturbance_magnitude,
-                                                                                     disturbance_magnitude)
+            e = (theta - theta_ref) + (theta_dot - theta_dot_ref) + Randomizer.Float(-noise_magnitude,
+                                                                                     noise_magnitude)
             ###########################
             out = cont.step(encoder.encode(e), t[i], TIME_STEP)
-            w1 = decoder_1.decode(out[0], out[1])  # Controller
-            w2 = decoder_2.decode(out[2], out[3])  # Controller
+            w1 = decoder_1.decode(out[0], out[1]) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)  # Controller
+            w2 = decoder_2.decode(out[2], out[3]) + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)  # Controller
             total_error += abs(e)
             theta, theta_dot = copter.step(w1, w2, t[i], TIME_STEP)  # Model
 

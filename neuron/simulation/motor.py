@@ -12,6 +12,6 @@ class Motor:
     def step(self, v, t, dt):
 
         self.i += dt * (- self.K * self.w - self.R * self.i + v) / self.L
-        self.w += dt * (-self.b * self.w + self.K * self.i)/self.K
+        self.w += dt * (-self.b * self.w + self.K * self.i)/self.J
 
         return self.w

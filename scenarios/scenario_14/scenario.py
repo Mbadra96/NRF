@@ -75,13 +75,13 @@ class Scenario(SuperScenario):
             plt.cla()
             f_ax[0].plot(t, v1)
             f_ax[0].grid()
-            f_ax[0].set_ylabel("x(m)")
+            f_ax[0].set_ylabel(r"$\varphi$")
 
             plt.sca(f_ax[1])
             plt.cla()
             f_ax[1].plot(t, v2)
             f_ax[1].grid()
-            f_ax[1].set_ylabel("x dot (m/s)")
+            f_ax[1].set_ylabel(r"$\.\varphi$")
 
             plt.sca(f_ax[2])
             plt.cla()

@@ -46,23 +46,25 @@ class Scenario(SuperScenario):
         x = 0
         x_dot = 0
         f_filt = 0
-        pen = InvertedPendulum(theta_0=theta)
+        m2 = kwargs['m2'] if ('m2' in kwargs) else 0.2
+        pen = InvertedPendulum(theta_0=theta, m2=m2)
         disturbance_magnitude = kwargs['disturbance_magnitude'] if ('disturbance_magnitude' in kwargs) else 0
+        noise_magnitude = kwargs['noise_magnitude'] if ('noise_magnitude' in kwargs) else 0
         t_10 = 0
         t_90 = 0
+        Tf = 40 * TIME_STEP
+        a = TIME_STEP / (Tf + TIME_STEP)
         # Simulation Loop
         for i in range(SAMPLES):
-            e1 = (theta_ref - theta) + (theta_dot_ref - theta_dot)
-            # + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            # e2 = - x - x_dot  # + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude)
-            total_error += abs(e1)  # + abs(e2)
+            e1 = (theta_ref - theta) + (theta_dot_ref - theta_dot) + Randomizer.Float(-noise_magnitude, noise_magnitude)
+            total_error += abs(e1)
             ######################
             sensors = encoder1.encode(e1)
             action = cont.step(sensors, t[i], TIME_STEP)
             f = - 10 * action[0] + 10 * action[1]
-
-            # f_filt = f_filt + 0.5 * (f - f_filt)  # LOW PASS Filter
-            f_filt = f
+            # f_filt_last = f_filt
+            # f_filt = f_filt + 0.005 * (f - f_filt)  # LOW PASS Filter
+            f_filt = (1 - a) * f_filt + a * f + Randomizer.Float(-disturbance_magnitude, disturbance_magnitude) # LOW PASS Filter
             theta, theta_dot, _, _ = pen.step(f_filt, t[i], TIME_STEP)  # Model
 
             if visualize:
